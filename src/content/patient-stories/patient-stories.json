@@ -1,0 +1,32 @@
+{
+  "story-1": {
+    "video": "/videos/patient-stories/story-1.mp4",
+    "poster": "/videos/patient-stories/story-1-poster.jpg",
+    "order": 1,
+    "featured": true
+  },
+  "story-2": {
+    "video": "/videos/patient-stories/story-2.mp4",
+    "poster": "/videos/patient-stories/story-2-poster.jpg",
+    "order": 2,
+    "featured": true
+  },
+  "story-3": {
+    "video": "/videos/patient-stories/story-3.mp4",
+    "poster": "/videos/patient-stories/story-3-poster.jpg",
+    "order": 3,
+    "featured": true
+  },
+  "story-4": {
+    "video": "/videos/patient-stories/story-4.mp4",
+    "poster": "/videos/patient-stories/story-4-poster.jpg",
+    "order": 4,
+    "featured": false
+  },
+  "story-5": {
+    "video": "/videos/patient-stories/story-5.mp4",
+    "poster": "/videos/patient-stories/story-5-poster.jpg",
+    "order": 5,
+    "featured": false
+  }
+}

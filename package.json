@@ -1,0 +1,20 @@
+{
+  "name": "dr-sajjad-yousafzai",
+  "type": "module",
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "astro": "^5.13.0",
+    "@astrojs/sitemap": "^3.4.0",
+    "@fontsource/jost": "^5.1.1",
+    "sharp": "^0.34.0"
+  },
+  "devDependencies": {
+    "gsap": "^3.13.0"
+  }
+}

@@ -1,0 +1,623 @@
+---
+import { getCollection, getEntry } from 'astro:content';
+import { Image } from 'astro:assets';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Icon from '../components/Icon.astro';
+import BtnArrow from '../components/BtnArrow.astro';
+import PatientStoryCard from '../components/PatientStoryCard.astro';
+import { physicianSchema, personSchema, faqSchema } from '../lib/schema';
+import heroPhoto from '../assets/doctor/hero-sjd.jpg';
+import aboutPhoto from '../assets/doctor/sajjad-about.jpg';
+import aboutPhotoSecondary from '../assets/doctor/dr-sajjad-ceremony.webp';
+
+const serviceImages = import.meta.glob<{ default: ImageMetadata }>(
+  '../assets/services/*.{jpg,jpeg,png,webp}',
+  { eager: true },
+);
+const serviceImage = (id: string) => {
+  const entry = Object.entries(serviceImages).find(([path]) => path.includes(`/${id}.`));
+  return entry?.[1].default;
+};
+
+const site = (await getEntry('siteSettings', 'settings'))!.data;
+const doctor = (await getEntry('doctor', 'profile'))!.data;
+const services = (await getCollection('services')).sort((a, b) => a.data.order - b.data.order);
+const testimonials = (await getCollection('testimonials')).map((t) => t.data);
+const videoStories = (await getCollection('patientStories'))
+  .map((s) => s.data)
+  .filter((s) => s.featured)
+  .sort((a, b) => a.order - b.order);
+const allFaqs = (await getCollection('faqs')).map((f) => f.data);
+const homeFaqs = allFaqs.filter((f) => ['Pain', 'Cost', 'Recovery'].includes(f.category)).slice(0, 6);
+
+const waText = encodeURIComponent('Assalam o alaikum, I would like to book an appointment with Dr. Sajjad Yousafzai.');
+const waLink = `https://wa.me/${site.whatsapp}?text=${waText}`;
+
+const visitSteps = [
+  { n: '01', title: 'You Sit Down and Talk', body: 'You tell Dr. Sajjad what you feel, in your own words. He listens without rushing you.' },
+  { n: '02', title: 'He Examines You', body: 'He looks at your legs or the affected area, and may use an ultrasound scan there and then to see the blood flow.' },
+  { n: '03', title: 'He Explains It Plainly', body: 'He tells you what is wrong and why, often with a simple drawing, so you and your family understand it.' },
+  { n: '04', title: 'You Decide Together', body: 'He explains your choices, what each involves, the recovery and the cost. Nothing is done without your agreement.' },
+];
+
+const seoTitle = 'Vascular Surgeon in Peshawar | Dr. Sajjad Yousafzai';
+const seoDesc = 'Dr. Sajjad Yousafzai, consultant vascular surgeon in Peshawar. Varicose veins, diabetic foot, DVT and more. Rated 5/5 by 460+ verified Google reviews. Call today.';
+
+const jsonLd = [
+  physicianSchema(site, { rating: 5, count: 460 }),
+  personSchema(site),
+  faqSchema(homeFaqs),
+];
+---
+<BaseLayout title={seoTitle} description={seoDesc} path="/" jsonLd={jsonLd} heroOverlay>
+
+  <!-- ============================ HERO ============================ -->
+  <section class="hero" id="hero">
+    <div class="hero-card">
+      <div class="hero-media">
+        <Image
+          src={heroPhoto}
+          alt="Dr. Sajjad Yousafzai, consultant vascular surgeon in Peshawar"
+          class="hero-photo"
+          widths={[520, 760, 1040]}
+          sizes="(max-width: 900px) 100vw, 55vw"
+          loading="eager"
+          fetchpriority="high"
+        />
+        <span class="hero-fade"></span>
+      </div>
+      <span class="hero-scrim" aria-hidden="true"></span>
+      <svg class="hero-vessel" viewBox="0 0 1200 700" fill="none" aria-hidden="true" preserveAspectRatio="xMidYMid slice">
+        <path class="draw" d="M-40 120 C220 170 380 40 600 120 C820 200 980 90 1240 150" stroke="rgba(255,255,255,0.16)" stroke-width="1.5" />
+        <path class="draw draw-2" d="M-40 600 C260 540 420 660 700 590 C940 530 1060 620 1240 570" stroke="rgba(255,255,255,0.12)" stroke-width="1.5" />
+      </svg>
+
+      <div class="hero-inner container">
+        <h1 class="hero-title reveal">Dr. Sajjad Yousafzai</h1>
+
+        <p class="hero-sub reveal" data-delay="90">
+          Peshawar's top vascular, endovascular and microvascular surgeon.<br />
+          Pak Medical Centre, Room No. 337/348, Khyber Bazar, Peshawar.
+        </p>
+
+        <div class="hero-actions reveal" data-delay="170">
+          <a href="/contact" class="btn btn--primary hero-cta">Book Appointment<BtnArrow /></a>
+          <span class="hero-rating">
+            <span class="hr-stars" aria-hidden="true">
+              <Icon name="star" size={14} /><Icon name="star" size={14} /><Icon name="star" size={14} /><Icon name="star" size={14} /><Icon name="star" size={14} />
+            </span>
+            <span class="hr-text"><strong class="tnum">5.0</strong> from 460+ Google reviews</span>
+          </span>
+        </div>
+
+        
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================= TRUST BAR ========================= -->
+  <section class="section--tight trust-wrap">
+    <div class="container">
+      <ul class="trust-bar">
+        <li class="reveal"><strong class="tnum" data-count="10" data-suffix="+">0+</strong><span>years in surgery</span></li>
+        <li class="reveal" data-delay="80"><strong class="tnum" data-count="460" data-suffix="+">0+</strong><span>verified patient reviews</span></li>
+        <li class="reveal" data-delay="160"><strong class="tnum" data-count="5" data-decimals="1"><span>out of 5</span></strong><span>average patient rating</span></li>
+        <li class="reveal" data-delay="240"><strong class="lrh">Lady Reading Hospital</strong><span>MTI, Peshawar</span></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ==================== ABOUT TEASER ==================== -->
+  <section class="section about-teaser">
+    <div class="container about-grid">
+      <div class="about-visual reveal">
+        <span class="about-lines" aria-hidden="true"></span>
+        <div class="about-image" role="img" aria-label="Dr. Sajjad Yousafzai at Lady Reading Hospital">
+          <Image src={aboutPhoto} alt="Dr. Sajjad Yousafzai, consultant vascular surgeon at Lady Reading Hospital" class="about-photo" width={560} height={616} />
+        </div>
+        <div class="about-image about-image--secondary" role="img" aria-label="Dr. Sajjad Yousafzai receiving his fellowship at the College of Physicians and Surgeons Pakistan">
+          <Image src={aboutPhotoSecondary} alt="Dr. Sajjad Yousafzai receiving his fellowship at the College of Physicians and Surgeons Pakistan" class="about-photo" width={420} height={330} />
+        </div>
+      </div>
+      <div class="about-copy">
+        <h2 class="reveal" data-delay="80">A specialist who takes the time to explain.</h2>
+        <p class="reveal" data-delay="140">{doctor.bio[1]}</p>
+        <p class="reveal" data-delay="180">{doctor.bio[3]}</p>
+        <ul class="about-points reveal" data-delay="220">
+          <li><span class="chk" aria-hidden="true"><Icon name="check" size={16} /></span>Over ten years in surgery, four of them dedicated to vascular work</li>
+          <li><span class="chk" aria-hidden="true"><Icon name="check" size={16} /></span>Consultant at Lady Reading Hospital, the province's main referral centre</li>
+          <li><span class="chk" aria-hidden="true"><Icon name="check" size={16} /></span>Other doctors send their own patients to him</li>
+        </ul>
+        <a href="/about" class="btn btn--ghost reveal" data-delay="260">More about Dr. Sajjad<BtnArrow /></a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== CONDITION GRID ==================== -->
+  <section class="section conditions-section">
+    <div class="container">
+      <div class="section-head section-head--center">
+        <h2 class="reveal" data-delay="80">Dr. Sajjad's Services</h2>
+        <p class="reveal" data-delay="140">Each problem starts with what you actually feel. Tap any card to learn what is happening and what can be done.</p>
+      </div>
+      <div class="condition-grid">
+        {services.map((s, i) => {
+          const photo = serviceImage(s.id);
+          return (
+            <a href={`/services#${s.id}`} class="condition-card reveal" data-delay={String((i % 4) * 70)}>
+              <div class="cc-frame">
+                <div class="cc-media">
+                  {photo ? (
+                    <Image src={photo} alt={s.data.title} class="cc-photo" width={480} height={560} />
+                  ) : (
+                    <span class="cc-icon" aria-hidden="true"><Icon name={s.data.iconKey} size={30} /></span>
+                  )}
+                </div>
+                <div class="cc-overlay" aria-hidden="true"></div>
+                <span class="cc-label">{s.data.title}</span>
+              </div>
+              <span class="cc-arrow" aria-hidden="true"><Icon name="arrow" size={18} /></span>
+            </a>
+          );
+        })}
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== VIDEO PATIENT STORIES ==================== -->
+  <section class="section video-stories-section" id="patient-stories">
+    <div class="container">
+      <div class="section-head section-head--center">
+        <h2 class="reveal" data-delay="80">Patient Stories</h2>
+        <p class="reveal" data-delay="140">Real patients, treatment, recovery and results.</p>
+      </div>
+      <!-- the cards start piled up and fan out into the grid as the section
+           scrolls through, so the layout itself is the reveal -->
+      <div class="video-stories-grid" data-story-stack>
+        {videoStories.map((v, i) => (
+          <div class="vs-item">
+            <PatientStoryCard video={v.video} poster={v.poster} index={i + 1} />
+          </div>
+        ))}
+      </div>
+      <div class="video-stories-cta reveal">
+        <a href="/cases" class="btn btn--ghost">View all patient stories<BtnArrow /></a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== FIRST VISIT ==================== -->
+  <section class="section visit-section">
+    <div class="visit-bg" aria-hidden="true">
+      <Image src={heroPhoto} alt="" class="visit-bg-photo" width={1600} height={1200} loading="lazy" />
+    </div>
+    <div class="container">
+      <div class="section-head section-head--center reveal">
+        <h2>What Happens at Your First Visit</h2>
+        <p>Many people feel nervous before seeing a surgeon. Here is exactly what to expect, so you can come in knowing how it will go.</p>
+      </div>
+      <ol class="visit-steps">
+        {visitSteps.map((step, i) => (
+          <li class="visit-step" style={`--i:${i}`}>
+            <div class="visit-card">
+              <span class="vs-num tnum" aria-hidden="true">{step.n}</span>
+              <h3>{step.title}</h3>
+              <p>{step.body}</p>
+            </div>
+          </li>
+        ))}
+      </ol>
+      <p class="visit-note reveal">You are always welcome to bring a family member into the room with you.</p>
+    </div>
+  </section>
+
+  <!-- ==================== PATIENT STORIES ==================== -->
+  <section class="section stories-section">
+    <div class="container">
+      <div class="section-head section-head--center">
+        <h2 class="reveal" data-delay="80">What Patients Say</h2>
+        <p class="reveal" data-delay="140">Rated 5 out of 5 by more than 460 verified patients on Google, with 100 percent reporting they were satisfied.</p>
+      </div>
+      <div class="stories-grid">
+        {testimonials.map((t, i) => (
+          <figure class="card story-card reveal" data-delay={String((i % 2) * 90)}>
+            {t.byDoctor && <span class="story-tag">From a referring doctor</span>}
+            <span class="story-quote-icon" aria-hidden="true"><Icon name="quote" size={26} /></span>
+            <blockquote>{t.quote}</blockquote>
+            <figcaption>
+              <div class="story-stars" aria-label={`${t.rating} out of 5 stars`}>
+                {Array.from({ length: t.rating }).map(() => <Icon name="star" size={15} />)}
+              </div>
+              <strong>{t.name}</strong>
+              <span>{t.procedure} · via {t.source}</span>
+            </figcaption>
+          </figure>
+        ))}
+      </div>
+      <div class="stories-cta reveal">
+        <a href="/cases" class="btn btn--ghost">View All Reviews<BtnArrow /></a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== FAQ ==================== -->
+  <section class="section faq-section">
+    <div class="container faq-grid">
+      <div class="faq-intro">
+        <h2 class="reveal" data-delay="80">Frequently Asked Questions</h2>
+        <p class="lede reveal" data-delay="140">These are fair questions and you deserve plain answers. Here are the ones patients ask most.</p>
+        <a href="/contact" class="btn btn--primary reveal" data-delay="200">Ask your own question<BtnArrow /></a>
+      </div>
+      <div class="faq-list reveal" data-delay="120">
+        {homeFaqs.map((f, i) => (
+          <details class="faq-item" open={i === 0}>
+            <summary><span>{f.question}</span><span class="faq-plus" aria-hidden="true"></span></summary>
+            <div class="faq-answer"><p>{f.answer}</p></div>
+          </details>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== LOCATION ==================== -->
+  <section class="section location-section">
+    <div class="container location-grid">
+      <div class="location-copy">
+        <h2 class="reveal" data-delay="80">Clinic in Khyber Bazar, Peshawar</h2>
+        <ul class="location-facts reveal" data-delay="140">
+          <li><span class="lf-icon" aria-hidden="true"><Icon name="map" size={20} /></span>
+            <div><strong>{site.addressLine}</strong><span>{site.addressLocality}, {site.addressRegion}. {site.landmark}</span></div></li>
+          <li><span class="lf-icon" aria-hidden="true"><Icon name="clock" size={20} /></span>
+            <div><strong>Clinic hours</strong><span>{site.clinicHours}</span></div></li>
+          <li><span class="lf-icon" aria-hidden="true"><Icon name="stethoscope" size={20} /></span>
+            <div><strong>Online video consultation</strong><span>{site.onlineHours}</span></div></li>
+          <li><span class="lf-icon" aria-hidden="true"><Icon name="phone" size={20} /></span>
+            <div><strong>Phone</strong><span><a href={`tel:${site.phone}`}>{site.phoneDisplay}</a></span></div></li>
+        </ul>
+        <div class="location-actions reveal" data-delay="200">
+          <a href={site.mapDirections} class="btn btn--ghost" rel="noopener"><Icon name="map" size={18} />Get directions</a>
+          <a href={waLink} class="btn btn--whatsapp" rel="noopener"><Icon name="whatsapp" size={18} />Message on WhatsApp</a>
+        </div>
+      </div>
+      <div class="location-map reveal" data-delay="120">
+        <div class="map-frame">
+          <iframe
+            class="map-embed"
+            src={site.mapEmbed}
+            title="Map of the clinic in Khyber Bazar"
+            loading="lazy"
+            referrerpolicy="no-referrer-when-downgrade"
+          ></iframe>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+</BaseLayout>
+
+<style>
+  /* ---------- HERO ----------
+     A single full-bleed photo card, inset from the page edges, with the
+     header floating on top of it. Copy sits bottom-left over a scrim. */
+  .hero {
+    --hero-pad: clamp(8px, 1vw, 14px);
+    /* neutral charcoal, deliberately not the brand navy: a blue field beside
+       the photo reads as a coloured panel rather than as darkened room */
+    --hero-bg: #071A2F;
+    --hero-bg-rgb: 7, 26, 47;
+    position: relative; z-index: 1; padding: var(--hero-pad);
+  }
+  .hero-card {
+    position: relative; isolation: isolate; overflow: hidden;
+    /* fills the viewport bar the small inset, like the reference */
+    min-height: max(600px, calc(100vh - var(--hero-pad) * 2));
+    min-height: max(600px, calc(100svh - var(--hero-pad) * 2));
+    display: flex; align-items: flex-end;
+    border-radius: clamp(18px, 2vw, 30px);
+    background: linear-gradient(115deg, #04101F 0%, var(--hero-bg) 58%, #0E2B47 100%);
+    box-shadow: var(--shadow-lg);
+  }
+
+  .hero-media { position: absolute; inset: 0 0 0 auto; width: min(62%, 780px); z-index: -2; }
+  .hero-photo { width: 100%; height: 100%; object-fit: cover; object-position: 52% 14%; }
+  /* melt the right-hand photo into the charcoal field on its left edge and base */
+  .hero-fade {
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(70% 80% at 52% 36%, transparent 42%, rgba(var(--hero-bg-rgb), 0.4) 100%),
+      linear-gradient(90deg, var(--hero-bg) 0%, rgba(var(--hero-bg-rgb), 0.9) 14%, rgba(var(--hero-bg-rgb), 0.42) 42%, rgba(var(--hero-bg-rgb), 0.1) 72%, rgba(var(--hero-bg-rgb), 0.02) 100%),
+      linear-gradient(0deg, var(--hero-bg) 0%, rgba(var(--hero-bg-rgb), 0.18) 26%, transparent 54%);
+  }
+  /* plain bottom-up wash for legibility, no colour cast */
+  .hero-scrim {
+    position: absolute; inset: 0; z-index: -1;
+    background: linear-gradient(0deg,
+      rgba(var(--hero-bg-rgb), 0.9) 0%,
+      rgba(var(--hero-bg-rgb), 0.55) 26%,
+      rgba(var(--hero-bg-rgb), 0.12) 52%,
+      transparent 72%);
+  }
+  .hero-vessel { position: absolute; inset: 0; width: 100%; height: 100%; z-index: -1; opacity: 0.45; }
+
+  /* pull the gutter in by the card inset so hero copy lines up with the header */
+  .hero-inner {
+    position: relative; z-index: 1;
+    padding-block: clamp(2.5rem, 5vw, 4.25rem);
+    padding-inline: calc(var(--gutter) - var(--hero-pad));
+  }
+  /* em-based cap breaks the name onto two lines at every size ("Dr. Sajjad" /
+     "Yousafzai"); ch is unreliable here because Jost's figures are wide */
+  .hero-title {
+    color: #fff; font-size: clamp(2.6rem, 8.2vw, 6.5rem); font-weight: 600;
+    line-height: 1.08; letter-spacing: -0.03em; max-width: 8.4em;
+  }
+  .hero-sub {
+    margin-top: clamp(1rem, 2vw, 1.5rem); max-width: 58ch;
+    color: rgba(255, 255, 255, 0.88); font-size: clamp(1rem, 1.15vw, 1.14rem); line-height: 1.55;
+    text-shadow: 0 1px 14px rgba(4, 15, 27, 0.6);
+  }
+  .hero-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 1rem 1.5rem; margin-top: clamp(1.75rem, 3vw, 2.5rem); }
+  .hero-cta { padding-block: 0.85rem; }
+
+  .hero-rating { display: inline-flex; align-items: center; gap: 0.55rem; color: rgba(255, 255, 255, 0.9); }
+  .hr-stars { display: inline-flex; gap: 1px; color: #FFC24A; }
+  .hr-text { font-size: 0.9rem; }
+  .hr-text strong { color: #fff; font-weight: 700; }
+
+  .hero-microtrust {
+    display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;
+    margin-top: 1.35rem; font-size: 0.88rem; color: rgba(255, 255, 255, 0.62);
+  }
+  .hero-microtrust :global(svg) { color: #3ED37E; flex: none; }
+  .hero-microtrust a { color: #fff; text-decoration-color: rgba(255, 255, 255, 0.5); }
+
+  .draw { stroke-dasharray: 2400; stroke-dashoffset: 2400; animation: draw-in 3s ease forwards 0.4s; }
+  .draw-2 { animation-delay: 0.8s; }
+  @keyframes draw-in { to { stroke-dashoffset: 0; } }
+  @media (prefers-reduced-motion: reduce) { .draw { stroke-dashoffset: 0; animation: none; } }
+
+  /* ---------- TRUST BAR ---------- */
+  .trust-wrap { position: relative; z-index: 1; }
+  .trust-bar { list-style: none; padding: 1.6rem clamp(1rem, 3vw, 2rem); margin: 0; display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: 1rem; background: var(--ink); border-radius: var(--radius-lg); box-shadow: var(--shadow); text-align: center; }
+  .trust-bar li { display: grid; gap: 4px; padding: 0.4rem 0.6rem; position: relative; }
+  .trust-bar li:not(:last-child)::after { content: ""; position: absolute; right: 0; top: 20%; height: 60%; width: 1px; background: rgba(255,255,255,0.14); }
+  .trust-bar strong { font-size: clamp(1.7rem, 4vw, 2.4rem); font-weight: 800; color: #fff; line-height: 1; }
+  .trust-bar strong span { font-size: 0.9rem; font-weight: 500; color: #9FC3E6; }
+  .trust-bar .lrh { font-size: clamp(1.05rem, 2.4vw, 1.35rem); }
+  .trust-bar span { color: #9FC3E6; font-size: 0.85rem; }
+
+  /* ---------- CONDITION GRID ---------- */
+  .condition-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.1rem; }
+  /* badge geometry: --cc-b = badge size, --cc-o = inset from card edges, --cc-g = gap cut around badge */
+  .condition-card { --cc-b: 52px; --cc-o: 0px; --cc-g: 5px;
+    position: relative; display: block; aspect-ratio: 3/3.6; text-decoration: none;
+    transition: transform 0.32s cubic-bezier(.2,.8,.2,1); }
+  .condition-card:hover, .condition-card:focus-visible { transform: translateY(-6px); }
+  .cc-frame { position: absolute; inset: 0; border-radius: var(--radius-lg); overflow: hidden;
+    background: linear-gradient(160deg, var(--blue) 0%, var(--ink) 100%); box-shadow: var(--shadow-sm);
+    transition: box-shadow 0.32s ease;
+    /* punch a circular notch in the bottom-right corner so the badge reads as separated */
+    --cc-cx: calc(100% - var(--cc-o) - var(--cc-b) / 2);
+    --cc-cy: calc(100% - var(--cc-o) - var(--cc-b) / 2);
+    --cc-r: calc(var(--cc-b) / 2 + var(--cc-g));
+    -webkit-mask: radial-gradient(circle var(--cc-r) at var(--cc-cx) var(--cc-cy), transparent 99%, #000 100%);
+    mask: radial-gradient(circle var(--cc-r) at var(--cc-cx) var(--cc-cy), transparent 99%, #000 100%); }
+  .condition-card:hover .cc-frame, .condition-card:focus-visible .cc-frame { box-shadow: var(--shadow-lg); }
+  .cc-media { position: absolute; inset: 0; }
+  .cc-photo { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s cubic-bezier(.2,.8,.2,1); }
+  .condition-card:hover .cc-photo, .condition-card:focus-visible .cc-photo { transform: scale(1.08); }
+  .cc-icon { position: absolute; inset: 0; display: grid; place-items: center; color: rgba(255,255,255,0.35); }
+  .cc-overlay { position: absolute; inset: 0; background: linear-gradient(0deg, rgba(7,26,47,0.92) 0%, rgba(7,26,47,0.35) 46%, rgba(7,26,47,0.08) 68%, transparent 82%);
+    transition: background 0.32s ease; }
+  .condition-card:hover .cc-overlay, .condition-card:focus-visible .cc-overlay { background: linear-gradient(0deg, rgba(7,26,47,0.96) 0%, rgba(7,26,47,0.5) 50%, rgba(7,26,47,0.12) 72%, transparent 88%); }
+  .cc-label { position: absolute; left: 1.1rem; right: calc(var(--cc-b) + var(--cc-o) + 0.9rem); bottom: 1.15rem;
+    color: #fff; font-weight: 700; font-size: 1.02rem; line-height: 1.25; text-transform: capitalize; }
+  .cc-arrow { position: absolute; right: var(--cc-o); bottom: var(--cc-o); width: var(--cc-b); height: var(--cc-b);
+    border-radius: 50%; display: grid; place-items: center; background: #fff; color: var(--ink);
+    transition: background 0.28s ease, transform 0.28s cubic-bezier(.2,.8,.2,1); }
+  .cc-arrow :global(svg) { transform: rotate(-45deg); transition: transform 0.28s cubic-bezier(.2,.8,.2,1); }
+  .condition-card:hover .cc-arrow, .condition-card:focus-visible .cc-arrow { background: var(--artery); color: #fff; }
+  .condition-card:hover .cc-arrow :global(svg), .condition-card:focus-visible .cc-arrow :global(svg) { transform: rotate(-45deg) translateX(2px); }
+
+  /* ---------- ABOUT TEASER ---------- */
+  .about-grid { display: grid; grid-template-columns: 0.85fr 1.15fr; gap: clamp(2.5rem, 6vw, 5rem); align-items: center; }
+  .about-visual { position: relative; padding: 0 2.2rem 2.6rem 0; }
+  .about-image { position: relative; aspect-ratio: 4/4.4; border-radius: var(--radius-lg); overflow: hidden;
+    background: linear-gradient(155deg, #16406b, var(--ink)); box-shadow: var(--shadow-lg); }
+  .about-photo { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: top center; }
+  .about-image--secondary { position: absolute; right: 0; bottom: 0; width: 52%; aspect-ratio: 4/3.2;
+    border: 6px solid var(--paper); box-shadow: var(--shadow-lg); z-index: 2; }
+  .about-lines { position: absolute; top: 0.4rem; right: 0; width: 22px; height: 90px; z-index: 1;
+    background: repeating-linear-gradient(90deg, var(--blue) 0 6px, transparent 6px 16px); opacity: 0.7; }
+  .about-copy h2 { margin: 0.7rem 0 1.1rem; font-size: var(--step-3); text-wrap: balance; }
+  .about-copy p { margin-bottom: 1rem; }
+  .about-points { list-style: none; padding: 0; margin: 1.4rem 0; display: grid; gap: 0.7rem; }
+  .about-points li { display: flex; align-items: flex-start; gap: 0.7rem; color: var(--ink); font-weight: 500; }
+  .chk { flex: none; display: grid; place-items: center; width: 26px; height: 26px; border-radius: 50%; background: var(--blue); color: #fff; margin-top: 1px; }
+
+  /* ---------- FIRST VISIT ---------- */
+  /* same portrait as the hero, dimmed as a backdrop instead of the old flat fill.
+     overflow:hidden lives on .visit-bg, NOT .visit-section: an ancestor with
+     non-visible overflow breaks position:sticky on the .visit-step cards below. */
+  .visit-section { position: relative; background: var(--ink); border-radius: clamp(20px, 3vw, 40px); }
+  .visit-bg { position: absolute; inset: 0; z-index: 0; overflow: hidden; border-radius: inherit; }
+  .visit-bg-photo { width: 100%; height: 100%; object-fit: cover; object-position: 50% 12%; }
+  .visit-bg::after {
+    content: ""; position: absolute; inset: 0;
+    background: linear-gradient(180deg, rgba(7,26,47,0.82) 0%, rgba(7,26,47,0.7) 30%, rgba(7,26,47,0.86) 100%);
+  }
+  .visit-section .container { position: relative; z-index: 1; }
+  .visit-section :global(.eyebrow) { color: #9FC3E6; }
+  .visit-section h2 { color: #fff; }
+  .visit-section .section-head p { color: #B9CBDD; }
+  .visit-steps { list-style: none; padding: 0; margin: 0 auto; max-width: 760px; counter-reset: none; }
+  /* Sticky stack: each card parks a little lower than the one before it, so the
+     next card slides up and covers it, leaving only its top edge showing. */
+  .visit-step { position: sticky; top: calc(12vh + var(--i) * 18px); margin-bottom: 4rem; }
+  .visit-step:last-child { margin-bottom: 0; }
+  .visit-card {
+    background: #0D2743; border: 1px solid rgba(255,255,255,0.12);
+    border-radius: var(--radius-lg); padding: 2rem 2.2rem 2.2rem;
+    box-shadow: 0 -14px 40px rgba(0,0,0,0.4);
+    transform-origin: 50% 0;
+    transition: box-shadow 0.3s ease;
+    will-change: transform;
+  }
+  .vs-num { font-size: 2.4rem; font-weight: 800; color: rgba(159,195,230,0.35); line-height: 1; display: block; margin-bottom: 0.6rem; }
+  .visit-step h3 { color: #fff; font-size: 1.35rem; margin-bottom: 0.5rem; }
+  .visit-step p { color: #B9CBDD; font-size: var(--step-0); max-width: 54ch; }
+  @media (prefers-reduced-motion: reduce) {
+    .visit-step { position: static; margin-bottom: 1.2rem; }
+    .visit-card { transform: none !important; opacity: 1 !important; }
+  }
+  .visit-note { text-align: center; color: #9FC3E6; margin-top: 2rem; font-size: var(--step-0); }
+
+  /* ---------- VIDEO PATIENT STORIES ---------- */
+  .video-stories-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.4rem; max-width: 900px; margin-inline: auto; }
+  .vs-item { position: relative; }
+  /* JS measures each card's distance to the pile and drives --q from 1 (stacked)
+     to 0 (grid). Without JS the grid renders as-is. */
+  .video-stories-grid[data-stack-ready] .vs-item {
+    --q: 1;
+    z-index: var(--z, 1);
+    will-change: transform;
+    transform:
+      translate3d(calc(var(--tx, 0px) * var(--q)), calc(var(--ty, 0px) * var(--q)), 0)
+      rotate(calc(var(--rot, 0deg) * var(--q)))
+      scale(calc(1 - var(--depth, 0) * var(--q)));
+  }
+  .video-stories-cta { text-align: center; margin-top: 2.2rem; }
+
+  /* ---------- STORIES ---------- */
+  .stories-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.4rem; }
+  .story-card { padding: 1.8rem; display: flex; flex-direction: column; }
+  .story-tag { align-self: flex-start; background: var(--blue-soft); color: var(--blue); font-size: 0.76rem; font-weight: 600; padding: 0.3rem 0.7rem; border-radius: 999px; margin-bottom: 0.9rem; }
+  .story-quote-icon { color: var(--blue-line); margin-bottom: 0.4rem; }
+  .story-card blockquote { margin: 0; font-size: 1.05rem; line-height: 1.6; color: var(--ink); flex: 1; }
+  .story-card figcaption { margin-top: 1.2rem; display: grid; gap: 2px; }
+  .story-stars { display: flex; gap: 1px; color: #F5A623; margin-bottom: 0.35rem; }
+  .story-card figcaption strong { color: var(--ink); }
+  .story-card figcaption span { font-size: 0.85rem; color: var(--slate-soft); }
+  .stories-cta { text-align: center; margin-top: 2rem; }
+
+  /* ---------- FAQ ---------- */
+  .faq-section { background: #F8FAFC; }
+  .faq-grid { display: grid; grid-template-columns: 0.85fr 1.15fr; gap: clamp(2rem, 5vw, 4rem); align-items: start; }
+  .faq-intro { position: sticky; top: 100px; }
+  .faq-intro h2 { margin: 0.7rem 0 1rem; }
+  .faq-intro .btn { margin-top: 1.4rem; }
+  .faq-list { display: grid; gap: 0.7rem; }
+  /* pills: tinted so they read as cards against the white section, lifting to
+     plain white with a shadow once the question is open */
+  .faq-item {
+    position: relative; overflow: hidden;
+    background: linear-gradient(180deg, #F4F8FC 0%, var(--blue-soft) 100%);
+    border: 1px solid var(--blue-line);
+    border-radius: 25px;
+    transition: background 0.22s ease, border-color 0.22s ease, box-shadow 0.22s ease, transform 0.22s ease;
+  }
+  .faq-item:hover { border-color: #A9C9E6; box-shadow: var(--shadow-sm); transform: translateY(-1px); }
+  .faq-item[open] {
+    background: #fff; border-color: #A9C9E6; box-shadow: var(--shadow-sm); transform: none;
+  }
+  .faq-item summary { list-style: none; cursor: pointer; display: flex; justify-content: space-between; align-items: center; gap: 1rem;
+    padding: 1.1rem 1.35rem; font-weight: 600; color: var(--ink); font-size: 1.05rem;
+    transition: color 0.2s ease; }
+  .faq-item summary:hover, .faq-item[open] summary { color: var(--blue-700); }
+  .faq-item summary:focus-visible { outline: 2.5px solid var(--blue); outline-offset: -3px; border-radius: var(--radius); }
+  .faq-item summary::-webkit-details-marker { display: none; }
+  /* plus sign sits in its own tinted chip so it stays visible on both states */
+  .faq-plus {
+    position: relative; flex: none; width: 30px; height: 30px; border-radius: 50%;
+    background: rgba(15, 76, 129, 0.09);
+    transition: background 0.22s ease, transform 0.22s ease;
+  }
+  .faq-item:hover .faq-plus { background: rgba(15, 76, 129, 0.16); }
+  .faq-item[open] .faq-plus { background: var(--blue); transform: rotate(180deg); }
+  .faq-plus::before, .faq-plus::after { content: ""; position: absolute; background: var(--blue); border-radius: 2px; transition: transform 0.2s ease, background 0.22s ease; }
+  .faq-plus::before { top: 14px; left: 8px; width: 14px; height: 2px; }
+  .faq-plus::after { left: 14px; top: 8px; width: 2px; height: 14px; }
+  .faq-item[open] .faq-plus::before, .faq-item[open] .faq-plus::after { background: #fff; }
+  .faq-item[open] .faq-plus::after { transform: scaleY(0); }
+  .faq-answer { padding: 0 1.35rem 1.25rem; }
+  .faq-answer p { color: var(--slate); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .faq-item, .faq-plus, .faq-item summary { transition: none; }
+    .faq-item:hover { transform: none; }
+    .faq-item[open] .faq-plus { transform: none; }
+  }
+
+  /* ---------- LOCATION ---------- */
+  .location-grid { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(2rem, 5vw, 3.5rem); align-items: center; }
+  .location-copy h2 { margin: 0.7rem 0 1.4rem; }
+  .location-facts { list-style: none; padding: 0; margin: 0 0 1.6rem; display: grid; gap: 1.1rem; }
+  .location-facts li { display: flex; gap: 0.9rem; align-items: flex-start; }
+  .lf-icon { flex: none; display: grid; place-items: center; width: 44px; height: 44px; border-radius: 12px; background: rgba(200, 16, 46, 0.1); color: var(--artery); animation: lf-pulse 2.2s ease-in-out infinite; }
+  .location-facts li:nth-child(2) .lf-icon { animation-delay: 0.15s; }
+  .location-facts li:nth-child(3) .lf-icon { animation-delay: 0.3s; }
+  .location-facts li:nth-child(4) .lf-icon { animation-delay: 0.45s; }
+  @keyframes lf-pulse {
+    0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(200, 16, 46, 0.25); }
+    50% { transform: scale(1.08); box-shadow: 0 0 0 6px rgba(200, 16, 46, 0); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .lf-icon { animation: none; }
+  }
+  .location-facts strong { display: block; color: var(--ink); }
+  .location-facts span { color: var(--slate); font-size: 0.95rem; }
+  .location-facts a { color: var(--blue); text-decoration: none; }
+  .location-actions { display: flex; flex-wrap: wrap; gap: 0.7rem; }
+  .map-frame { aspect-ratio: 5/4; border-radius: var(--radius-lg); overflow: hidden;
+    border: 1px solid var(--blue-line); box-shadow: var(--shadow-lg); background: #EBF1F8; }
+  .map-embed { display: block; width: 100%; height: 100%; border: 0; }
+
+  /* ---------- RESPONSIVE ---------- */
+  @media (max-width: 960px) {
+    .about-grid, .faq-grid, .location-grid { grid-template-columns: 1fr; }
+    .condition-grid { grid-template-columns: repeat(2, 1fr); }
+    .video-stories-grid { grid-template-columns: repeat(2, 1fr); max-width: 620px; }
+    .stories-grid { grid-template-columns: 1fr; }
+    .faq-intro { position: static; }
+
+    /* the fixed quick-contact bar appears from 940px down, so the copy has to
+       clear it at every width below this breakpoint */
+    .hero-inner { padding-bottom: clamp(5.5rem, 12vw, 7.5rem); }
+
+    /* photo goes full-bleed behind the copy, kept bright across the top third
+       and handed over to a heavy scrim below where the copy sits */
+    .hero-media { width: 100%; }
+    .hero-photo { object-position: 50% 26%; }
+    .hero-fade {
+      background:
+        radial-gradient(82% 48% at 52% 24%, transparent 46%, rgba(var(--hero-bg-rgb), 0.4) 100%),
+        linear-gradient(0deg, var(--hero-bg) 4%, rgba(var(--hero-bg-rgb), 0.55) 32%, rgba(var(--hero-bg-rgb), 0.1) 64%, transparent 100%);
+    }
+    .hero-scrim {
+      background: linear-gradient(0deg,
+        rgba(var(--hero-bg-rgb), 0.96) 0%,
+        rgba(var(--hero-bg-rgb), 0.9) 38%,
+        rgba(var(--hero-bg-rgb), 0.55) 55%,
+        rgba(var(--hero-bg-rgb), 0.16) 74%,
+        transparent 92%);
+    }
+  }
+  @media (max-width: 620px) {
+    .trust-bar { grid-template-columns: repeat(2, 1fr); }
+    .trust-bar li:nth-child(2)::after { display: none; }
+    .condition-grid { grid-template-columns: 1fr; }
+    .video-stories-grid { grid-template-columns: 1fr; max-width: 340px; }
+    .condition-card { --cc-b: 68px; }
+    .cc-label { font-size: 1.3rem; }
+    .cc-arrow :global(svg) { width: 24px; height: 24px; }
+    .visit-step { top: calc(9vh + var(--i) * 14px); margin-bottom: 2.4rem; }
+    .visit-card { padding: 1.6rem 1.4rem 1.8rem; border-radius: var(--radius); }
+
+    .hero-actions { gap: 0.9rem 1.1rem; }
+    /* the WhatsApp line would crowd the copy against his face, and the fixed
+       quick-contact bar already offers the same tap */
+    .hero-microtrust { display: none; }
+  }
+</style>

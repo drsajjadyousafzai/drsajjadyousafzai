@@ -1,0 +1,174 @@
+---
+import { Image } from 'astro:assets';
+import { getEntry, getCollection } from 'astro:content';
+import Icon from './Icon.astro';
+import BtnArrow from './BtnArrow.astro';
+import footerPortrait from '../assets/doctor/dr-sajjad-hero.webp';
+const site = (await getEntry('siteSettings', 'settings'))!.data;
+const services = (await getCollection('services')).sort((a, b) => a.data.order - b.data.order);
+const year = new Date().getFullYear();
+---
+<footer class="site-footer">
+  <div class="footer-bg" aria-hidden="true"></div>
+
+  <div class="container footer-grid">
+    <div class="footer-brand">
+      <figure class="footer-portrait">
+        <Image
+          src={footerPortrait}
+          alt="Dr. Sajjad Yousafzai in the operating theatre at Lady Reading Hospital, Peshawar"
+          width={387}
+          height={516}
+          loading="lazy"
+        />
+        <figcaption>
+          <strong>Dr. Sajjad Yousafzai</strong>
+          <span>Lady Reading Hospital MTI, Peshawar</span>
+        </figcaption>
+      </figure>
+
+      <div class="footer-social">
+        <a href="https://web.facebook.com/profile.php?id=61580965303260" target="_blank" rel="noopener" aria-label="Dr. Sajjad Yousafzai on Facebook"><Icon name="facebook" size={18} /></a>
+        <a href="https://www.instagram.com/yousafzaidrsajjad" target="_blank" rel="noopener" aria-label="Dr. Sajjad Yousafzai on Instagram"><Icon name="instagram" size={18} /></a>
+        <a href="https://www.tiktok.com/@dr.sajjad.yousafz" target="_blank" rel="noopener" aria-label="Dr. Sajjad Yousafzai on TikTok"><Icon name="tiktok" size={18} /></a>
+      </div>
+    </div>
+
+    <div class="footer-col">
+      <h3>Care we provide</h3>
+      <ul>
+        {services.slice(0, 8).map((s) => (
+          <li><a href={`/services#${s.id}`}>{s.data.title}</a></li>
+        ))}
+      </ul>
+    </div>
+
+    <div class="footer-col">
+      <h3>Site</h3>
+      <ul>
+        <li><a href="/about">About Dr. Sajjad</a></li>
+        <li><a href="/services">All Services</a></li>
+        <li><a href="/cases">Patient Stories</a></li>
+        <li><a href="/contact">Contact & Location</a></li>
+      </ul>
+    </div>
+
+    <div class="footer-col footer-contact">
+      <h3>Clinic</h3>
+      <p class="nap">
+        <Icon name="map" size={18} />
+        <span>{site.addressLine}, {site.addressLocality}, {site.addressRegion}</span>
+      </p>
+      <p class="nap"><Icon name="phone" size={18} /><a href={`tel:${site.phone}`}>{site.phoneDisplay}</a></p>
+      <p class="nap"><Icon name="clock" size={18} /><span>{site.clinicHours}</span></p>
+      <a href="/contact" class="btn btn--primary footer-cta">Book an Appointment<BtnArrow /></a>
+    </div>
+  </div>
+
+  <div class="container footer-bottom">
+    <p>© {year} Dr. Sajjad Yousafzai. For general information only. This website does not replace a proper medical examination.</p>
+    <p>Consultant Vascular, General and Laparoscopic Surgeon, Lady Reading Hospital MTI, Peshawar.</p>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    position: relative; z-index: 1; isolation: isolate;
+    color: #C7D6E6;
+    margin-top: var(--space-2xl);
+    background: var(--ink);
+    border-radius: clamp(20px, 3vw, 40px) clamp(20px, 3vw, 40px) 0 0;
+    box-shadow: 0 -18px 50px -30px rgba(7,26,47,0.45);
+  }
+
+  /* Decorative background stack: base wash + drifting aurora + film grain.
+     Lives in its own layer so nothing here can clip the sticky cards in <main>. */
+  .footer-bg {
+    position: absolute; inset: 0; z-index: -1;
+    overflow: hidden; border-radius: inherit;
+    background: linear-gradient(165deg, #0A2440 0%, var(--ink) 52%, #04101F 100%);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.10);
+  }
+  .footer-bg::before {
+    content: ''; position: absolute; inset: -20% -60%;
+    background:
+      radial-gradient(28% 50% at 20% 26%, rgba(60,150,230,0.85), transparent 70%),
+      radial-gradient(24% 48% at 80% 16%, rgba(40,120,210,0.75), transparent 72%),
+      radial-gradient(30% 56% at 64% 92%, rgba(40,120,210,0.42), transparent 70%),
+      radial-gradient(22% 44% at 6% 84%, rgba(110,190,250,0.5), transparent 70%);
+    filter: blur(20px);
+    mix-blend-mode: screen;
+    animation: footerAurora 11s ease-in-out infinite alternate;
+    will-change: transform;
+  }
+  .footer-bg::after {
+    content: ''; position: absolute; inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-size: 180px 180px;
+    opacity: 0.16; mix-blend-mode: overlay; pointer-events: none;
+  }
+  @keyframes footerAurora {
+    0%   { transform: translate3d(-22%, -6%, 0) scale(1.05) rotate(0deg); }
+    50%  { transform: translate3d(22%, 6%, 0) scale(1.15) rotate(5deg); }
+    100% { transform: translate3d(-16%, 8%, 0) scale(1.08) rotate(-4deg); }
+  }
+  @media (prefers-reduced-motion: reduce) { .footer-bg::before { animation: none; } }
+
+  .footer-grid { display: grid; grid-template-columns: 1.5fr 1fr 0.8fr 1.2fr; gap: 2.5rem; padding-block: 3.5rem 2.5rem; }
+  .footer-portrait {
+    position: relative; margin: 0; width: min(210px, 100%);
+    border-radius: var(--radius); overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.14);
+    box-shadow: 0 18px 40px -22px rgba(0,0,0,0.75);
+    background: rgba(255,255,255,0.04);
+    transition: transform 0.35s cubic-bezier(0.2,0.7,0.3,1), box-shadow 0.35s ease;
+  }
+  .footer-portrait:hover { transform: translateY(-3px); box-shadow: 0 24px 48px -22px rgba(0,0,0,0.8); }
+  .footer-portrait :global(img) { width: 100%; aspect-ratio: 1/1; object-fit: cover; object-position: 50% 18%; }
+  .footer-portrait figcaption {
+    position: absolute; inset: auto 0 0 0; display: grid; gap: 1px;
+    padding: 1.6rem 0.85rem 0.75rem;
+    background: linear-gradient(to top, rgba(4,16,31,0.92) 22%, rgba(4,16,31,0));
+  }
+  .footer-portrait strong { color: #fff; font-size: 0.86rem; font-weight: 600; letter-spacing: -0.01em; }
+  .footer-portrait span { color: #9FC3E6; font-size: 0.7rem; line-height: 1.3; }
+  @media (prefers-reduced-motion: reduce) {
+    .footer-portrait, .footer-portrait:hover { transition: none; transform: none; }
+  }
+
+  .footer-social { display: flex; gap: 0.6rem; margin-top: 1.1rem; }
+  .footer-social a {
+    display: grid; place-items: center; width: 38px; height: 38px;
+    border-radius: 50%; color: #C7D6E6;
+    background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.14);
+    transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
+  }
+  .footer-social a:hover { background: var(--blue); color: #fff; transform: translateY(-2px); }
+  @media (prefers-reduced-motion: reduce) { .footer-social a:hover { transform: none; } }
+
+  .footer-col h3, .footer-contact h3 { color: #fff; font-size: 0.82rem; letter-spacing: 0.16em; text-transform: uppercase; margin-bottom: 1rem; }
+  .footer-col ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 0.6rem; }
+  .footer-col a { color: #C7D6E6; text-decoration: none; font-size: 0.95rem; }
+  .footer-col a:hover { color: #fff; text-decoration: underline; }
+
+  .nap { display: flex; align-items: flex-start; gap: 0.55rem; font-size: 0.95rem; margin-bottom: 0.7rem; }
+  .nap :global(svg) { color: #9FC3E6; flex: none; margin-top: 2px; }
+  .nap a { color: #C7D6E6; text-decoration: none; }
+  .footer-cta { margin-top: 0.9rem; }
+
+  .footer-bottom { border-top: 1px solid rgba(255,255,255,0.1); padding-block: 1.5rem; display: flex; flex-wrap: wrap; gap: 0.5rem 2rem; justify-content: space-between; }
+  .footer-bottom p { font-size: 0.82rem; color: #8EA6BE; }
+
+  @media (max-width: 900px) { .footer-grid { grid-template-columns: 1fr 1fr; gap: 2rem; } }
+  @media (max-width: 560px) {
+    .footer-grid { grid-template-columns: 1fr; text-align: center; }
+    .footer-brand { display: flex; flex-direction: column; align-items: center; }
+    .footer-social { justify-content: center; }
+    .footer-portrait { width: min(320px, 80%); }
+    .footer-portrait :global(img) { aspect-ratio: 4/3; object-position: 50% 22%; }
+    .footer-col ul { justify-items: center; }
+    .nap { justify-content: center; }
+    .footer-cta { margin-inline: auto; }
+    .footer-bottom { justify-content: center; text-align: center; }
+  }
+</style>

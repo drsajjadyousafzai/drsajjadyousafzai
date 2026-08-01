@@ -1,0 +1,424 @@
+---
+import { getCollection, getEntry } from 'astro:content';
+import { Image } from 'astro:assets';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Icon from '../components/Icon.astro';
+import BtnArrow from '../components/BtnArrow.astro';
+import { physicianSchema, breadcrumbSchema, faqSchema } from '../lib/schema';
+import heroPhoto from '../assets/doctor/hero-sjd.jpg';
+
+const site = (await getEntry('siteSettings', 'settings'))!.data;
+const services = (await getCollection('services')).sort((a, b) => a.data.order - b.data.order);
+const allFaqs = (await getCollection('faqs')).map((f) => f.data);
+const visitFaqs = allFaqs.filter((f) => ['Access', 'Cost'].includes(f.category));
+
+const waText = encodeURIComponent('Assalam o alaikum, I would like to book an appointment with Dr. Sajjad Yousafzai.');
+const waLink = `https://wa.me/${site.whatsapp}?text=${waText}`;
+
+const seoTitle = 'Contact and Appointments | Dr. Sajjad Yousafzai, Vascular Surgeon Peshawar';
+const seoDesc = 'Book an appointment with Dr. Sajjad Yousafzai, consultant vascular surgeon in Peshawar. Call, WhatsApp, visit the Khyber Bazar clinic or ask for an evening online video consultation.';
+
+const jsonLd = [
+  physicianSchema(site, { rating: 5, count: 460 }),
+  breadcrumbSchema([
+    { name: 'Home', path: '/' },
+    { name: 'Contact', path: '/contact' },
+  ]),
+  faqSchema(visitFaqs),
+];
+---
+<BaseLayout title={seoTitle} description={seoDesc} path="/contact" jsonLd={jsonLd} heroOverlay>
+
+  <!-- ============================ PAGE HERO ============================ -->
+  <section class="page-hero">
+    <div class="container">
+      <div class="ph-card reveal">
+        <Image
+          src={heroPhoto}
+          alt="Dr. Sajjad Yousafzai in the operating theatre in Peshawar"
+          class="ph-photo"
+          widths={[720, 1080, 1440]}
+          sizes="(max-width: 1240px) 100vw, 1160px"
+          loading="eager"
+          fetchpriority="high"
+        />
+        <span class="ph-scrim" aria-hidden="true"></span>
+
+        <!-- the step cut out of the top-right corner, plus the two rounded
+             junctions where that cut meets the card edges -->
+        <span class="ph-notch" aria-hidden="true"></span>
+
+        <p class="ph-display">Contact Us</p>
+
+        <a href="#booking" class="ph-scroll" aria-label="Jump to the appointment form">
+          <Icon name="arrow" size={22} />
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================ BOOKING ============================ -->
+  <section class="section booking-section" id="booking">
+    <div class="container booking-grid">
+      <div class="booking-copy">
+        <p class="ph-kicker reveal" data-delay="80">Appointments, directions and straight answers</p>
+        <h1 class="reveal" data-delay="140">Book an Appointment With <span class="ph-name">Dr. Sajjad Yousafzai</span></h1>
+
+        <p class="reveal" data-delay="120">
+          Fill in the short form and it will open WhatsApp with your details already written out.
+          Nothing is sent until you press send yourself. 
+        </p>
+
+        <ul class="booking-points reveal" data-delay="160">
+          <li><span class="chk" aria-hidden="true"><Icon name="check" size={16} /></span>You get a reply during clinic hours, not days later</li>
+          <li><span class="chk" aria-hidden="true"><Icon name="check" size={16} /></span>Bring a family member with you if it helps</li>
+          <li><span class="chk" aria-hidden="true"><Icon name="check" size={16} /></span>Fees are explained openly before anything is done</li>
+        </ul>
+
+        
+      </div>
+
+      <div class="booking-form-wrap reveal" data-delay="120">
+        <form class="booking-form card" id="booking-form" data-whatsapp={site.whatsapp}>
+          <div class="field">
+            <label for="bf-name">Your name</label>
+            <input id="bf-name" name="name" type="text" autocomplete="name" required placeholder="e.g. Ahmad Khan" />
+          </div>
+
+          <div class="field">
+            <label for="bf-phone">Phone number</label>
+            <input id="bf-phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" required placeholder="e.g. 0300 1234567" />
+          </div>
+
+         
+
+          <div class="field">
+            <label for="bf-problem">What is the problem?</label>
+            <select id="bf-problem" name="problem" required>
+              <option value="">Please choose one</option>
+              {services.map((s) => <option value={s.data.title}>{s.data.title}</option>)}
+              <option value="Something else">Something else</option>
+              <option value="Not sure yet">I am not sure yet</option>
+            </select>
+          </div>
+
+          <fieldset class="field field--radio">
+            <legend>How would you like to be seen?</legend>
+            <label class="radio">
+              <input type="radio" name="visit" value="Clinic visit in Peshawar" checked />
+              <span>Clinic visit in Peshawar</span>
+            </label>
+            <label class="radio">
+              <input type="radio" name="visit" value="Online video consultation" />
+              <span>Online video consultation</span>
+            </label>
+          </fieldset>
+
+          <button type="submit" class="btn btn--primary btn--wide">Book on WhatsApp<BtnArrow /></button>
+
+          <p class="form-note">
+            This opens WhatsApp with your details filled in. Please do not send test results or
+            photographs of a private nature until the clinic asks for them.
+          </p>
+
+          <a href={`tel:${site.phone}`} class="btn btn--ghost btn--wide form-alt"><Icon name="phone" size={18} />Call {site.phoneDisplay} instead</a>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================== FAQ ============================== -->
+  <section class="section faq-section">
+    <div class="container faq-grid">
+      <div class="faq-intro">
+        <h2 class="reveal" data-delay="80">Questions About Visiting</h2>
+        <p class="lede reveal" data-delay="120">The practical things patients ask before booking, answered plainly.</p>
+        <a href="#booking" class="btn btn--primary reveal" data-delay="160">Request an appointment<BtnArrow /></a>
+      </div>
+      <div class="faq-list reveal" data-delay="120">
+        {visitFaqs.map((f, i) => (
+          <details class="faq-item" open={i === 0}>
+            <summary><span>{f.question}</span><span class="faq-plus" aria-hidden="true"></span></summary>
+            <div class="faq-answer"><p>{f.answer}</p></div>
+          </details>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================ LOCATION ============================ -->
+  <section class="section location-section">
+    <div class="container location-grid">
+      <div class="location-copy">
+        <h2 class="reveal" data-delay="80">Clinic in Khyber Bazar, Peshawar</h2>
+        <p class="reveal" data-delay="120">
+          The clinic is in Khyber Bazar, in the middle of Peshawar, and is easy to reach by
+          rickshaw or taxi from Saddar, University Road and the Ring Road.
+        </p>
+        <ul class="location-facts reveal" data-delay="160">
+          <li><span class="lf-icon" aria-hidden="true"><Icon name="map" size={20} /></span>
+            <div><strong>{site.addressLine}</strong><span>{site.addressLocality}, {site.addressRegion}. {site.landmark}</span></div></li>
+          <li><span class="lf-icon" aria-hidden="true"><Icon name="clock" size={20} /></span>
+            <div><strong>Clinic hours</strong><span>{site.clinicHours}</span></div></li>
+          <li><span class="lf-icon" aria-hidden="true"><Icon name="stethoscope" size={20} /></span>
+            <div><strong>Online video consultation</strong><span>{site.onlineHours}</span></div></li>
+          <li><span class="lf-icon" aria-hidden="true"><Icon name="phone" size={20} /></span>
+            <div><strong>Phone and WhatsApp</strong><span><a href={`tel:${site.phone}`}>{site.phoneDisplay}</a></span></div></li>
+        </ul>
+        <div class="location-actions reveal" data-delay="200">
+          <a href={site.mapDirections} class="btn btn--ghost" rel="noopener"><Icon name="map" size={18} />Get directions</a>
+          <a href={waLink} class="btn btn--whatsapp" rel="noopener"><Icon name="whatsapp" size={18} />Message on WhatsApp</a>
+        </div>
+      </div>
+      <div class="location-map reveal" data-delay="120">
+        <div class="map-frame">
+          <iframe
+            class="map-embed"
+            src={site.mapEmbed}
+            title="Map of the clinic in Khyber Bazar"
+            loading="lazy"
+            referrerpolicy="no-referrer-when-downgrade"
+          ></iframe>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</BaseLayout>
+
+<style>
+  /* =====================================================================
+     PAGE HERO
+     A wide photo card with a step cut out of the top-right corner. The cut
+     is a paper-coloured block; the two places where it meets the card edge
+     are rounded with radial-gradient masks, because CSS has no concave
+     border-radius. Geometry is driven by the three --notch-* variables.
+     ===================================================================== */
+  /* the card slides up under the floating header, so the logo and the nav pill
+     sit on the photo; the corner cut is sized to hold the call button */
+  .page-hero { padding-top: clamp(0.75rem, 1.5vw, 1.25rem); }
+
+  .ph-card {
+    --card-r: clamp(20px, 2.2vw, 32px);
+    --notch-w: clamp(150px, 20vw, 250px);
+    --notch-h: clamp(72px, 7.5vw, 96px);
+    --notch-r: clamp(14px, 1.6vw, 24px);
+    /* must be the exact page base, or the cut reads as a pasted-on block */
+    --notch-bg: var(--paper);
+    /* reaches past the container edges without ever leaving the viewport,
+       since --bleed never exceeds --gutter */
+    --bleed: clamp(0.5rem, 2.5vw, 2.5rem);
+    margin-inline: calc(var(--bleed) * -1);
+    width: calc(100% + var(--bleed) * 2);
+    position: relative; isolation: isolate; overflow: hidden;
+    min-height: clamp(280px, 36vw, 450px);
+    display: flex; align-items: flex-end;
+    border-radius: var(--card-r);
+    background: var(--ink);
+    /* pulled in with a negative spread so the halo stays under the card: the
+       shared shadow would tint the page around the corner cut and outline it */
+    box-shadow: 0 34px 60px -26px rgba(7, 26, 47, 0.28);
+  }
+  /* the portrait is taller than this band, so only the vertical crop is a real
+     choice: sitting low keeps his hands and the chart in frame and keeps his
+     face out from behind the display text */
+  .ph-photo { position: absolute; inset: 0; z-index: -2; width: 100%; height: 100%; object-fit: cover; object-position: 50% 88%; }
+  .ph-scrim {
+    position: absolute; inset: 0; z-index: -1;
+    background:
+      linear-gradient(90deg, rgba(7,26,47,0.88) 0%, rgba(7,26,47,0.62) 42%, rgba(7,26,47,0.28) 72%, rgba(7,26,47,0.34) 100%),
+      linear-gradient(0deg, rgba(7,26,47,0.72) 0%, rgba(7,26,47,0.1) 55%, transparent 100%);
+  }
+
+  .ph-notch {
+    position: absolute; top: 0; right: 0; z-index: 3;
+    width: var(--notch-w); height: var(--notch-h);
+    background: var(--notch-bg);
+    border-bottom-left-radius: var(--notch-r);
+  }
+  /* rounds the card's top edge as it steps down into the cut */
+  .ph-notch::before {
+    content: ""; position: absolute; top: 0; left: calc(var(--notch-r) * -1);
+    width: var(--notch-r); height: var(--notch-r);
+    background: radial-gradient(circle var(--notch-r) at 0 100%, transparent 0 99%, var(--notch-bg) 100%);
+  }
+  /* rounds the corner where the cut hands back over to the card's right edge */
+  .ph-notch::after {
+    content: ""; position: absolute; top: 100%; right: 0;
+    width: var(--notch-r); height: var(--notch-r);
+    background: radial-gradient(circle var(--notch-r) at 0 100%, transparent 0 99%, var(--notch-bg) 100%);
+  }
+
+  .ph-display {
+    position: relative; z-index: 2;
+    padding: clamp(1.5rem, 4vw, 3rem) clamp(1.25rem, 3.5vw, 3rem) clamp(1.5rem, 4vw, 2.75rem);
+    color: #fff; text-transform: uppercase;
+    font-size: clamp(2.4rem, 11vw, 7.5rem); font-weight: 700;
+    line-height: 0.95; letter-spacing: -0.035em;
+    text-shadow: 0 2px 30px rgba(4, 15, 27, 0.45);
+  }
+
+  .ph-scroll {
+    position: absolute; z-index: 4;
+    right: clamp(1rem, 2.5vw, 2.25rem); bottom: clamp(1rem, 2.5vw, 2.25rem);
+    width: clamp(46px, 4.6vw, 62px); aspect-ratio: 1;
+    display: grid; place-items: center; border-radius: 50%;
+    border: 1.5px solid rgba(255, 255, 255, 0.5);
+    color: #fff; text-decoration: none;
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(6px);
+    transition: background 0.24s ease, border-color 0.24s ease, color 0.24s ease, transform 0.24s ease;
+  }
+  .ph-scroll :global(svg) { transform: rotate(90deg); animation: ph-nudge 2.4s ease-in-out infinite; }
+  .ph-scroll:hover { background: #fff; border-color: #fff; color: var(--ink); transform: translateY(2px); }
+  @keyframes ph-nudge {
+    0%, 62%, 100% { transform: rotate(90deg) translateX(0); }
+    35% { transform: rotate(90deg) translateX(4px); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .ph-scroll :global(svg) { animation: none; }
+    .ph-scroll:hover { transform: none; }
+  }
+
+  .ph-kicker { color: #071A2F; font-size: var(--step-0); font-weight: 500; }
+  .ph-name { color: var(--blue); }
+
+  /* ---------- BOOKING ---------- */
+  .booking-grid { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(2rem, 5vw, 4rem); align-items: start; }
+  .booking-copy h1 {
+    margin: 0.35rem 0 1.4rem; color: #071A2F;
+    font-size: clamp(2rem, 4.2vw, 3.1rem); font-weight: 700; letter-spacing: -0.035em;
+    max-width: 14ch;
+  }
+  .booking-copy h2 { margin: 0.7rem 0 1rem; font-size: var(--step-3); }
+  .booking-points { list-style: none; padding: 0; margin: 1.4rem 0 1.8rem; display: grid; gap: 0.7rem; }
+  .booking-points li { display: flex; align-items: flex-start; gap: 0.7rem; color: var(--ink); font-weight: 500; }
+  .chk { flex: none; display: grid; place-items: center; width: 26px; height: 26px; border-radius: 50%; background: var(--blue); color: #fff; margin-top: 1px; }
+
+  .booking-form { padding: clamp(1.4rem, 3vw, 2.1rem); display: grid; gap: 1rem; }
+  .field { display: grid; gap: 0.4rem; }
+  .field label, .field legend { font-size: 0.92rem; font-weight: 600; color: var(--ink); }
+  .opt { font-weight: 400; color: var(--slate-soft); }
+  .booking-form input[type="text"],
+  .booking-form input[type="tel"],
+  .booking-form select,
+  .booking-form textarea {
+    width: 100%; font-family: inherit; font-size: 1rem; color: var(--ink);
+    background: var(--paper); border: 1.5px solid var(--blue-line); border-radius: 12px;
+    padding: 0.75rem 0.9rem; min-height: 48px;
+    transition: border-color 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+  }
+  .booking-form textarea { min-height: 96px; resize: vertical; line-height: 1.5; }
+  .booking-form input:focus, .booking-form select:focus, .booking-form textarea:focus {
+    outline: none; background: #fff; border-color: var(--blue);
+    box-shadow: 0 0 0 3px rgba(15, 76, 129, 0.14);
+  }
+  .booking-form input::placeholder, .booking-form textarea::placeholder { color: #9AA9BA; }
+  .booking-form :global(input:user-invalid), .booking-form :global(select:user-invalid) {
+    border-color: var(--artery); box-shadow: 0 0 0 3px rgba(200, 16, 46, 0.12);
+  }
+
+  .field--radio { border: 0; padding: 0; margin: 0; display: grid; gap: 0.4rem; }
+  .radio { display: flex; align-items: center; gap: 0.6rem; font-weight: 400; color: var(--slate); cursor: pointer; }
+  .radio input { accent-color: var(--blue); width: 18px; height: 18px; flex: none; }
+
+  .form-note { font-size: 0.85rem; color: var(--slate-soft); line-height: 1.5; }
+  .form-alt { margin-top: 0.2rem; }
+
+  /* ---------- LOCATION (matches the homepage block) ---------- */
+  .location-section { background: #F8FAFC; }
+  .location-grid { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(2rem, 5vw, 3.5rem); align-items: center; }
+  .location-copy h2 { margin: 0.7rem 0 1rem; }
+  .location-facts { list-style: none; padding: 0; margin: 1.4rem 0 1.6rem; display: grid; gap: 1.1rem; }
+  .location-facts li { display: flex; gap: 0.9rem; align-items: flex-start; }
+  .lf-icon { flex: none; display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50px; background: rgba(200, 16, 46, 0.1); color: var(--artery); }
+  .location-facts strong { display: block; color: var(--ink); }
+  .location-facts span { color: var(--slate); font-size: 0.95rem; }
+  .location-facts a { color: var(--blue); text-decoration: none; }
+  .location-actions { display: flex; flex-wrap: wrap; gap: 0.7rem; }
+  .map-frame { aspect-ratio: 5/4; border-radius: var(--radius-lg); overflow: hidden;
+    border: 1px solid var(--blue-line); box-shadow: var(--shadow-lg); background: #EBF1F8; }
+  .map-embed { display: block; width: 100%; height: 100%; border: 0; }
+
+  /* ---------- FAQ (matches the homepage block) ---------- */
+  .faq-grid { display: grid; grid-template-columns: 0.85fr 1.15fr; gap: clamp(2rem, 5vw, 4rem); align-items: start; }
+  .faq-intro { position: sticky; top: 100px; }
+  .faq-intro h2 { margin: 0.7rem 0 1rem; }
+  .faq-intro .btn { margin-top: 1.4rem; }
+  .faq-list { display: grid; gap: 0.7rem; }
+  .faq-item {
+    position: relative; overflow: hidden;
+    background: linear-gradient(180deg, #F4F8FC 0%, var(--blue-soft) 100%);
+    border: 1px solid var(--blue-line); border-radius: var(--radius);
+    transition: background 0.22s ease, border-color 0.22s ease, box-shadow 0.22s ease, transform 0.22s ease;
+  }
+  .faq-item:hover { border-color: #A9C9E6; box-shadow: var(--shadow-sm); transform: translateY(-1px); }
+  .faq-item[open] { background: #fff; border-color: #A9C9E6; box-shadow: var(--shadow-sm); transform: none; }
+  .faq-item summary { list-style: none; cursor: pointer; display: flex; justify-content: space-between; align-items: center; gap: 1rem;
+    padding: 1.1rem 1.35rem; font-weight: 600; color: var(--ink); font-size: 1.05rem; transition: color 0.2s ease; }
+  .faq-item summary:hover, .faq-item[open] summary { color: var(--blue-700); }
+  .faq-item summary:focus-visible { outline: 2.5px solid var(--blue); outline-offset: -3px; border-radius: var(--radius); }
+  .faq-item summary::-webkit-details-marker { display: none; }
+  .faq-plus { position: relative; flex: none; width: 30px; height: 30px; border-radius: 50%;
+    background: rgba(15, 76, 129, 0.09); transition: background 0.22s ease, transform 0.22s ease; }
+  .faq-item:hover .faq-plus { background: rgba(15, 76, 129, 0.16); }
+  .faq-item[open] .faq-plus { background: var(--blue); transform: rotate(180deg); }
+  .faq-plus::before, .faq-plus::after { content: ""; position: absolute; background: var(--blue); border-radius: 2px; transition: transform 0.2s ease, background 0.22s ease; }
+  .faq-plus::before { top: 14px; left: 8px; width: 14px; height: 2px; }
+  .faq-plus::after { left: 14px; top: 8px; width: 2px; height: 14px; }
+  .faq-item[open] .faq-plus::before, .faq-item[open] .faq-plus::after { background: #fff; }
+  .faq-item[open] .faq-plus::after { transform: scaleY(0); }
+  .faq-answer { padding: 0 1.35rem 1.25rem; }
+  .faq-answer p { color: var(--slate); }
+  @media (prefers-reduced-motion: reduce) {
+    .faq-item, .faq-plus, .faq-item summary { transition: none; }
+    .faq-item:hover { transform: none; }
+    .faq-item[open] .faq-plus { transform: none; }
+  }
+
+  /* ---------- RESPONSIVE ---------- */
+  @media (max-width: 960px) {
+    .booking-grid, .location-grid, .faq-grid { grid-template-columns: 1fr; }
+    .faq-intro { position: static; }
+  }
+  /* the nav collapses to a toggle here, so the right-hand cluster is the call
+     button plus the toggle and the cut has to be wide enough for both */
+  @media (max-width: 940px) {
+    .ph-card { --notch-w: clamp(215px, 32vw, 265px); --notch-h: 88px; }
+  }
+  @media (max-width: 620px) {
+    /* only the toggle is left on a phone: any wider and the cut starts eating
+       into the logo and the doctor's name */
+    .ph-card { --notch-w: clamp(96px, 28vw, 128px); --notch-h: 88px; }
+    .ph-display { padding-bottom: 4.5rem; }
+    .ph-scroll { right: 1rem; bottom: 1rem; }
+  }
+</style>
+
+<script>
+  // The site is static, so the appointment form does not post anywhere. It
+  // composes the enquiry into a WhatsApp message and hands it to the patient,
+  // who presses send themselves.
+  const form = document.getElementById('booking-form') as HTMLFormElement | null;
+
+  form?.addEventListener('submit', (event) => {
+    event.preventDefault();
+    if (!form.reportValidity()) return;
+
+    const data = new FormData(form);
+    const value = (key: string) => String(data.get(key) ?? '').trim();
+
+    const lines = [
+      'Assalam o alaikum. I would like to book an appointment with Dr. Sajjad Yousafzai.',
+      '',
+      `Name: ${value('name')}`,
+      `Phone: ${value('phone')}`,
+      
+      `Problem: ${value('problem')}`,
+      `Preferred visit: ${value('visit')}`,
+    ];
+
+    const number = form.dataset.whatsapp ?? '';
+    window.open(`https://wa.me/${number}?text=${encodeURIComponent(lines.join('\n'))}`, '_blank', 'noopener');
+  });
+</script>

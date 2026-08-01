@@ -1,0 +1,42 @@
+{
+  "pain-hurt": {
+    "question": "Will the treatment hurt?",
+    "answer": "Most vein treatments cause little pain. You are given medicine so the area is numb, and you can go home the same day. For bigger operations you are given anaesthesia so you feel nothing during the surgery. Some soreness afterwards is normal and is managed with simple pain medicine. Dr. Sajjad will tell you honestly what to expect for your own case before anything is done.",
+    "category": "Pain"
+  },
+  "pain-asleep": {
+    "question": "Will I be put to sleep?",
+    "answer": "It depends on the treatment. Many vein procedures are done while you are awake, with only the leg numbed. Larger operations may need general anaesthesia, which means you are asleep and feel nothing. This is always explained and agreed with you first.",
+    "category": "Pain"
+  },
+  "recovery-work": {
+    "question": "How long until I can walk and go back to work?",
+    "answer": "For most vein treatments you can walk the same day, and light walking is encouraged. Many people return to office work within a few days. Heavier physical work may need one to two weeks. Recovery is different for every person and every procedure, so you will be given a clear plan for your own situation.",
+    "category": "Recovery"
+  },
+  "recovery-overnight": {
+    "question": "Do I need to stay overnight in hospital?",
+    "answer": "Many vascular treatments are day cases, which means you come in and go home the same day. Some larger operations need a short hospital stay. You will know which one applies to you before the day of treatment, so you can arrange things at home.",
+    "category": "Recovery"
+  },
+  "recovery-return": {
+    "question": "Will the problem come back?",
+    "answer": "For most conditions, proper treatment gives a lasting result, but no honest doctor can promise a problem will never return. A lot depends on the condition and on care afterwards, such as managing diabetes or wearing support stockings when advised. Dr. Sajjad will explain the real chances for your case, without over-promising.",
+    "category": "Recovery"
+  },
+  "cost": {
+    "question": "How much does it cost?",
+    "answer": "Fees are discussed openly and clearly before any treatment, with no hidden charges. The cost depends on the condition and the treatment needed. If you are worried about cost, please raise it. It is a normal and fair question, and it will be answered plainly.",
+    "category": "Cost"
+  },
+  "access-family": {
+    "question": "Can I bring someone with me?",
+    "answer": "Yes. You are welcome to bring a family member into the consultation. Many patients find it easier to have someone with them to listen and to help remember what was said.",
+    "category": "Access"
+  },
+  "access-online": {
+    "question": "I live outside Peshawar. Do I have to travel for every visit?",
+    "answer": "No. An evening online video consultation is available Monday to Saturday. This is useful for patients travelling from Mardan, Charsadda, Nowshera, Swat, Swabi, Kohat, Bajaur and further. Your first visit or your surgery may need to be in person, but many follow-up checks can be done online.",
+    "category": "Access"
+  }
+}

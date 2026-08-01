@@ -1,0 +1,175 @@
+---
+import BaseHead from '../components/BaseHead.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+
+interface Props {
+  title: string;
+  description: string;
+  path: string;
+  jsonLd?: object[];
+  /** Float the header over a dark full-bleed hero instead of sitting above it. */
+  heroOverlay?: boolean;
+}
+const { title, description, path, jsonLd, heroOverlay = false } = Astro.props;
+---
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    <BaseHead title={title} description={description} path={path} jsonLd={jsonLd} />
+  </head>
+  <body>
+    <a href="#main" class="skip-link">Skip to main content</a>
+    <Header overlay={heroOverlay} />
+    <main id="main">
+      <slot />
+    </main>
+    <Footer />
+
+    <script is:inline>
+      // Flip no-js -> js as early as possible so reveal targets can animate.
+      document.documentElement.classList.remove('no-js');
+    </script>
+
+    <script>
+      // Scroll reveals + one-shot counters. Deferred module, never blocks paint.
+      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      const revealEls = document.querySelectorAll<HTMLElement>('.reveal');
+      if (reduce) {
+        revealEls.forEach((el) => el.classList.add('is-in'));
+      } else if ('IntersectionObserver' in window) {
+        const io = new IntersectionObserver((entries) => {
+          entries.forEach((e) => {
+            if (e.isIntersecting) {
+              const el = e.target as HTMLElement;
+              const delay = el.dataset.delay ? Number(el.dataset.delay) : 0;
+              setTimeout(() => el.classList.add('is-in'), delay);
+              io.unobserve(el);
+            }
+          });
+        }, { rootMargin: '0px 0px -8% 0px', threshold: 0.12 });
+        revealEls.forEach((el) => io.observe(el));
+      } else {
+        revealEls.forEach((el) => el.classList.add('is-in'));
+      }
+
+      const counters = document.querySelectorAll<HTMLElement>('[data-count]');
+      const runCounter = (el: HTMLElement) => {
+        const target = Number(el.dataset.count);
+        const suffix = el.dataset.suffix ?? '';
+        const decimals = el.dataset.decimals ? Number(el.dataset.decimals) : 0;
+        if (reduce || Number.isNaN(target)) { el.textContent = target.toFixed(decimals) + suffix; return; }
+        const dur = 1300; const start = performance.now();
+        const tick = (now: number) => {
+          const p = Math.min(1, (now - start) / dur);
+          const eased = 1 - Math.pow(1 - p, 3);
+          el.textContent = (target * eased).toFixed(decimals) + suffix;
+          if (p < 1) requestAnimationFrame(tick);
+        };
+        requestAnimationFrame(tick);
+      };
+      if ('IntersectionObserver' in window && counters.length) {
+        const co = new IntersectionObserver((entries) => {
+          entries.forEach((e) => {
+            if (e.isIntersecting) { runCounter(e.target as HTMLElement); co.unobserve(e.target); }
+          });
+        }, { threshold: 0.5 });
+        counters.forEach((el) => co.observe(el));
+      } else {
+        counters.forEach(runCounter);
+      }
+
+      // Sticky card stack: as the next card slides up over a parked card, push the
+      // parked one back in depth (scale + dim) so the pile reads three-dimensional.
+      const stackSteps = Array.from(document.querySelectorAll<HTMLElement>('.visit-step'));
+      if (!reduce && stackSteps.length > 1) {
+        const cards = stackSteps.map((s) => s.querySelector<HTMLElement>('.visit-card')!);
+        let queued = false;
+        const paint = () => {
+          queued = false;
+          for (let i = 0; i < stackSteps.length - 1; i++) {
+            const card = cards[i];
+            if (!card) continue;
+            const rect = stackSteps[i].getBoundingClientRect();
+            const nextTop = stackSteps[i + 1].getBoundingClientRect().top;
+            // 0 while the next card is still below, 1 once it fully covers this one
+            const travel = rect.height + 40;
+            const p = Math.min(1, Math.max(0, (rect.bottom - nextTop) / travel));
+            card.style.transform = `scale(${1 - p * 0.06}) translateY(${p * -10}px)`;
+            card.style.opacity = String(1 - p * 0.45);
+          }
+        };
+        const onScroll = () => {
+          if (queued) return;
+          queued = true;
+          requestAnimationFrame(paint);
+        };
+        addEventListener('scroll', onScroll, { passive: true });
+        addEventListener('resize', onScroll, { passive: true });
+        paint();
+      }
+
+      // Patient story videos: a pile of cards that fans out into its grid layout
+      // as the section scrolls up the viewport. Offsets are measured from the
+      // real grid, so it stays correct at every breakpoint.
+      const storyStack = document.querySelector<HTMLElement>('[data-story-stack]');
+      const storyItems = storyStack
+        ? Array.from(storyStack.querySelectorAll<HTMLElement>('.vs-item'))
+        : [];
+      if (storyStack && !reduce && storyItems.length > 1) {
+        const n = storyItems.length;
+        const mid = (n - 1) / 2;
+        // last card of the pile stagger, so they do not all unfold in lockstep
+        const stagger = 0.1;
+        const span = 1 + stagger * (n - 1);
+
+        const measure = () => {
+          const centres = storyItems.map((el) => ({
+            x: el.offsetLeft + el.offsetWidth / 2,
+            y: el.offsetTop + el.offsetHeight / 2,
+          }));
+          const pileX = (Math.min(...centres.map((c) => c.x)) + Math.max(...centres.map((c) => c.x))) / 2;
+          const pileY = (Math.min(...centres.map((c) => c.y)) + Math.max(...centres.map((c) => c.y))) / 2;
+          storyItems.forEach((el, i) => {
+            el.style.setProperty('--tx', `${pileX - centres[i].x}px`);
+            el.style.setProperty('--ty', `${pileY - centres[i].y}px`);
+            el.style.setProperty('--rot', `${(i - mid) * 6}deg`);
+            el.style.setProperty('--depth', String(Math.abs(i - mid) * 0.06));
+            el.style.setProperty('--z', String(Math.round((n - Math.abs(i - mid)) * 10 - i)));
+          });
+        };
+
+        const paintStack = () => {
+          const rect = storyStack.getBoundingClientRect();
+          const vh = window.innerHeight || document.documentElement.clientHeight;
+          // still piled until the grid top has climbed to 75vh, fully open only
+          // once it is near the top of the viewport
+          const start = vh * 0.75;
+          const end = vh * 0.1;
+          const p = Math.min(1, Math.max(0, (start - rect.top) / (start - end)));
+          storyItems.forEach((el, i) => {
+            const local = Math.min(1, Math.max(0, (p * span - i * stagger)));
+            const eased = 1 - Math.pow(1 - local, 3);
+            el.style.setProperty('--q', String(1 - eased));
+          });
+        };
+
+        let stackQueued = false;
+        const onStackScroll = () => {
+          if (stackQueued) return;
+          stackQueued = true;
+          requestAnimationFrame(() => { stackQueued = false; paintStack(); });
+        };
+        const remeasure = () => { measure(); paintStack(); };
+
+        measure();
+        paintStack();
+        storyStack.setAttribute('data-stack-ready', '');
+        addEventListener('scroll', onStackScroll, { passive: true });
+        addEventListener('resize', remeasure, { passive: true });
+        addEventListener('load', remeasure);
+      }
+    </script>
+  </body>
+</html>

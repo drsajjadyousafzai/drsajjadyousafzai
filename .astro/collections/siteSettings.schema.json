@@ -1,0 +1,135 @@
+{
+  "$ref": "#/definitions/siteSettings",
+  "definitions": {
+    "siteSettings": {
+      "type": "object",
+      "properties": {
+        "$schema": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "tagline": {
+            "type": "string"
+          },
+          "phone": {
+            "type": "string"
+          },
+          "phoneDisplay": {
+            "type": "string"
+          },
+          "whatsapp": {
+            "type": "string"
+          },
+          "whatsappDisplay": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "addressLine": {
+            "type": "string"
+          },
+          "addressLocality": {
+            "type": "string"
+          },
+          "addressRegion": {
+            "type": "string"
+          },
+          "postalCode": {
+            "type": "string"
+          },
+          "country": {
+            "type": "string"
+          },
+          "landmark": {
+            "type": "string"
+          },
+          "geo": {
+            "type": "object",
+            "properties": {
+              "lat": {
+                "type": "number"
+              },
+              "lng": {
+                "type": "number"
+              }
+            },
+            "required": [
+              "lat",
+              "lng"
+            ],
+            "additionalProperties": false
+          },
+          "mapEmbed": {
+            "type": "string"
+          },
+          "mapDirections": {
+            "type": "string"
+          },
+          "clinicHours": {
+            "type": "string"
+          },
+          "onlineHours": {
+            "type": "string"
+          },
+          "consultationFee": {
+            "type": "string"
+          },
+          "socials": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "label": {
+                  "type": "string"
+                },
+                "url": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "label",
+                "url"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "defaultOgImage": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "tagline",
+          "phone",
+          "phoneDisplay",
+          "whatsapp",
+          "whatsappDisplay",
+          "email",
+          "addressLine",
+          "addressLocality",
+          "addressRegion",
+          "postalCode",
+          "country",
+          "landmark",
+          "geo",
+          "mapEmbed",
+          "mapDirections",
+          "clinicHours",
+          "onlineHours",
+          "consultationFee",
+          "socials",
+          "defaultOgImage"
+        ],
+        "additionalProperties": false
+      }
+    }
+  },
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}

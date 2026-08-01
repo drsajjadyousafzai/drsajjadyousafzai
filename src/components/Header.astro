@@ -1,0 +1,384 @@
+---
+import { getEntry } from 'astro:content';
+import { Image } from 'astro:assets';
+import Icon from './Icon.astro';
+import BtnArrow from './BtnArrow.astro';
+import doctorPortrait from '../assets/doctor/dr-sajjad-about.webp';
+
+interface Props {
+  /** Float the header over a dark hero: transparent bar, white text, glass nav pill. */
+  overlay?: boolean;
+}
+const { overlay = false } = Astro.props;
+
+const site = (await getEntry('siteSettings', 'settings'))!.data;
+const path = Astro.url.pathname;
+const nav = [
+  { label: 'Home', href: '/', icon: 'home' },
+  { label: 'About', href: '/about', icon: 'stethoscope' },
+  { label: 'Services', href: '/services', icon: 'grid' },
+  { label: 'Patient Stories', href: '/cases', icon: 'quote' },
+  { label: 'Contact', href: '/contact', icon: 'map' },
+];
+const waText = encodeURIComponent('Assalam o alaikum, I would like to book an appointment with Dr. Sajjad Yousafzai.');
+const isActive = (href: string) => href === '/' ? path === '/' : path.startsWith(href);
+const isHome = path === '/';
+---
+<header class:list={['site-header', { overlay, home: isHome }]} id="site-header" data-overlay={overlay ? 'true' : undefined}>
+  <div class="container header-inner">
+    <a href="/" class="brand" aria-label="Dr. Sajjad Yousafzai, home">
+      <span class="brand-mark" aria-hidden="true">
+        <img src="/logo.png" alt="" width="52" height="52" />
+      </span>
+      <span class="brand-text">Dr. Sajjad Yousafzai</span>
+    </a>
+
+    <nav class="main-nav" aria-label="Primary">
+      <ul>
+        {nav.map((item) => (
+          <li><a href={item.href} class:list={['nav-link', { active: isActive(item.href) }]} aria-current={isActive(item.href) ? 'page' : undefined}>{item.label}</a></li>
+        ))}
+      </ul>
+    </nav>
+
+    <div class="header-actions">
+      <a href={`tel:${site.phone}`} class="header-call"><Icon name="phone" size={17} />Call Now</a>
+    </div>
+
+    <button class="nav-toggle" aria-expanded="false" aria-controls="mobile-menu" aria-label="Open menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+
+</header>
+
+<!-- Right-hand drawer: a card headed by the doctor, then the nav grouped into
+     plain sections. Closed state is visibility:hidden, which also takes it out
+     of the tab order and the accessibility tree.
+
+     It sits outside <header> on purpose: the bar carries a backdrop-filter,
+     which would make it the containing block for this fixed element, so the
+     drawer would be sized to the bar and its off-screen panel would widen the
+     page. -->
+<div class="mobile-menu" id="mobile-menu" role="dialog" aria-modal="true" aria-label="Menu">
+    <div class="mm-scrim" data-menu-close></div>
+    <div class="mm-panel">
+      <div class="mm-head">
+        <div class="mm-head-top">
+          <span class="mm-mark">
+            <img src="/logo.png" alt="" width="34" height="34" />
+            <span>Dr. Sajjad</span>
+          </span>
+          <button class="mm-close" type="button" aria-label="Close menu" data-menu-close>
+            <Icon name="close" size={20} />
+          </button>
+        </div>
+        <Image src={doctorPortrait} alt="" class="mm-avatar" width={132} height={132} loading="lazy" />
+        <p class="mm-name">{site.name}</p>
+        <p class="mm-role">{site.tagline}</p>
+      </div>
+
+      <nav class="mm-body" aria-label="Mobile">
+        <p class="mm-group">Browse</p>
+        <ul>
+          {nav.map((item) => (
+            <li>
+              <a href={item.href} class:list={['mm-link', { active: isActive(item.href) }]} aria-current={isActive(item.href) ? 'page' : undefined}>
+                <Icon name={item.icon} size={21} />{item.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+
+        <p class="mm-group">Get in touch</p>
+        <ul>
+          <li><a href={`tel:${site.phone}`} class="mm-link"><Icon name="phone" size={21} />{site.phoneDisplay}</a></li>
+          <li><a href={`https://wa.me/${site.whatsapp}?text=${waText}`} class="mm-link"><Icon name="whatsapp" size={21} />WhatsApp</a></li>
+          <li><a href="/contact#booking" class="mm-link"><Icon name="clock" size={21} />Clinic hours</a></li>
+        </ul>
+      </nav>
+
+      <div class="mm-foot">
+        <a href="/contact#booking" class="btn btn--primary btn--wide">Book Appointment<BtnArrow /></a>
+        <p class="mm-foot-note">{site.clinicHours}</p>
+      </div>
+    </div>
+</div>
+
+<style>
+  /* ---------------------------------------------------------------
+     Two modes:
+       default    solid paper bar, ink text (inner pages)
+       .overlay   transparent bar floating on a dark hero, white text
+     Both collapse to the solid look once .condensed is set by script.
+     --------------------------------------------------------------- */
+  .site-header {
+    position: static; z-index: 100;
+    margin-top: 16px;
+    background: rgba(248, 250, 252, 0.9);
+    backdrop-filter: saturate(1.4) blur(10px);
+    border-bottom: 1px solid transparent;
+    transition: box-shadow 0.25s ease, background 0.25s ease, border-color 0.25s ease;
+  }
+  .site-header.overlay {
+    position: absolute; left: 0; right: 0; top: 0;
+    background: transparent; backdrop-filter: none;
+  }
+  .site-header.condensed {
+    position: static;
+    box-shadow: var(--shadow-sm);
+    border-bottom-color: var(--blue-line);
+    background: rgba(248, 250, 252, 0.96);
+    backdrop-filter: saturate(1.4) blur(10px);
+  }
+  /* the bar is not sticky: it scrolls away with the page. An overlay bar stays
+     absolute once condensed, since going absolute -> static would drop its
+     height back into the page and shove everything down mid-scroll */
+  .site-header.overlay.condensed { position: absolute; top: 0; left: 0; right: 0; margin-top: 0; }
+
+  .header-inner {
+    position: relative;
+    display: flex; align-items: center; gap: 1.25rem;
+    min-height: 84px; padding-top: 0.6rem; transition: min-height 0.25s ease, padding-top 0.25s ease;
+  }
+  .condensed .header-inner { min-height: 66px; padding-top: 0; }
+
+  /* ---------- brand ---------- */
+  .brand { display: inline-flex; align-items: center; gap: 0.6rem; text-decoration: none; margin-right: auto; }
+  .brand-mark {
+    display: grid; place-items: center; width: 52px; height: 52px; flex: none;
+  }
+  .brand-mark img { width: 100%; height: 100%; object-fit: contain; }
+  .brand-text {
+    color: var(--ink); font-size: 1.28rem; font-weight: 700; letter-spacing: -0.025em; line-height: 1;
+    transition: color 0.25s ease;
+  }
+  .overlay:not(.condensed) .brand-text { color: #fff; }
+
+  /* ---------- centred nav pill ---------- */
+  .main-nav {
+    position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+  }
+  .main-nav ul {
+    display: flex; align-items: center; gap: 2px; list-style: none; margin: 0;
+    padding: 5px; border-radius: 999px;
+    background: var(--blue-soft);
+    box-shadow: inset 0 0 0 1px var(--blue-line);
+    transition: background 0.25s ease, box-shadow 0.25s ease;
+  }
+  .overlay:not(.condensed) .main-nav ul {
+    background: rgba(255, 255, 255, 0.13);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.2);
+    backdrop-filter: saturate(1.3) blur(14px);
+  }
+  .nav-link {
+    display: inline-block; padding: 0.5rem 1.05rem; border-radius: 999px;
+    color: var(--ink); text-decoration: none; font-weight: 500; font-size: 0.95rem; white-space: nowrap;
+    transition: background 0.2s ease, color 0.2s ease;
+  }
+  .nav-link:hover { background: rgba(255, 255, 255, 0.75); color: var(--blue); }
+  .nav-link.active { background: #fff; color: var(--ink); font-weight: 600; box-shadow: var(--shadow-sm); }
+  .overlay:not(.condensed) .nav-link { color: rgba(255, 255, 255, 0.86); }
+  .overlay:not(.condensed) .nav-link:hover { background: rgba(255, 255, 255, 0.16); color: #fff; }
+  .overlay:not(.condensed) .nav-link.active {
+    background: rgba(255, 255, 255, 0.94); color: var(--ink); box-shadow: 0 4px 14px rgba(7, 26, 47, 0.18);
+  }
+
+  /* ---------- right-hand call pill ---------- */
+  .header-actions { display: flex; align-items: center; gap: 0.6rem; margin-left: auto; }
+  .header-call {
+    display: inline-flex; align-items: center; gap: 0.55rem;
+    padding: 0.7rem 1.35rem; min-height: 48px; border-radius: 999px;
+    background: #fff; color: var(--ink);
+    font-weight: 500; font-size: 0.92rem; text-decoration: none; white-space: nowrap;
+    box-shadow: 0 5px 15px rgba(7, 26, 47, 0.10), inset 0 0 0 1px var(--blue-line);
+    transition: transform 0.18s ease, box-shadow 0.18s ease, color 0.18s ease;
+  }
+  .header-call :global(svg) { width: 17px; height: 17px; color: var(--artery); flex: none; }
+  .header-call:hover { transform: translateY(-1px); box-shadow: 0 10px 24px rgba(7, 26, 47, 0.18), inset 0 0 0 1px var(--blue-line); }
+  .overlay:not(.condensed) .header-call { box-shadow: 0 8px 22px rgba(7, 26, 47, 0.28); }
+
+  /* ---------- mobile ---------- */
+  .nav-toggle {
+    display: none; flex-direction: column; justify-content: center; gap: 5px;
+    width: 46px; height: 46px; background: transparent;
+    border: 1px solid var(--blue-line); border-radius: 13px; cursor: pointer;
+    transition: border-color 0.25s ease, background 0.25s ease;
+  }
+  .nav-toggle span { display: block; height: 2px; width: 20px; margin: 0 auto; background: var(--ink); border-radius: 2px; transition: transform 0.2s, opacity 0.2s, background 0.25s; }
+  /* a glass chip with blue bars, matching the nav pill: the toggle has to stay
+     legible both on a dark hero and on the pale corner cut of the contact hero,
+     where a white hamburger would disappear */
+  .overlay:not(.condensed) .nav-toggle {
+    border-color: rgba(255, 255, 255, 0.28);
+    background: rgba(255, 255, 255, 0.28);
+    backdrop-filter: saturate(1.3) blur(14px);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.2);
+  }
+  .overlay:not(.condensed) .nav-toggle span { background: var(--blue); }
+  /* the home hero is dark right under the toggle, so there the bars go white */
+  .overlay.home:not(.condensed) .nav-toggle span { background: #fff; }
+  .nav-toggle[aria-expanded="true"] span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+  .nav-toggle[aria-expanded="true"] span:nth-child(2) { opacity: 0; }
+  .nav-toggle[aria-expanded="true"] span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+  /* ---------- mobile drawer ---------- */
+  .mobile-menu {
+    position: fixed; inset: 0; z-index: 150;
+    /* the closed panel is parked past the right edge; clipping it here keeps it
+       from ever widening the page */
+    overflow: hidden;
+    visibility: hidden;
+  }
+  .mobile-menu[data-open] { visibility: visible; }
+  .mm-scrim {
+    position: absolute; inset: 0;
+    background: rgba(7, 26, 47, 0.5);
+    backdrop-filter: blur(2px);
+    opacity: 0; transition: opacity 0.3s ease;
+  }
+  .mobile-menu[data-open] .mm-scrim { opacity: 1; }
+
+  .mm-panel {
+    position: absolute; top: 0; right: 0; bottom: 0;
+    width: min(340px, 88vw);
+    display: flex; flex-direction: column;
+    background: var(--paper);
+    border-radius: var(--radius-lg) 0 0 var(--radius-lg);
+    box-shadow: -24px 0 60px rgba(7, 26, 47, 0.28);
+    overflow-y: auto; overscroll-behavior: contain;
+    transform: translateX(100%);
+    transition: transform 0.34s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+  .mobile-menu[data-open] .mm-panel { transform: none; }
+  @media (prefers-reduced-motion: reduce) {
+    .mm-panel, .mm-scrim { transition: none; }
+  }
+
+  /* the head is the only tinted block, curved along its bottom edge so the
+     white list below reads as a separate sheet */
+  .mm-head {
+    position: relative; flex: none;
+    padding: 1.1rem 1.4rem 1.7rem;
+    text-align: center; color: #fff;
+    background: linear-gradient(155deg, var(--blue) 0%, var(--ink) 100%);
+    border-radius: var(--radius-lg) 0 0 26px;
+  }
+  .mm-head-top { display: flex; align-items: center; justify-content: space-between; }
+  .mm-mark { display: inline-flex; align-items: center; gap: 0.5rem; font-weight: 700; letter-spacing: -0.01em; }
+  .mm-mark img { border-radius: 8px; }
+  .mm-close {
+    display: grid; place-items: center; width: 38px; height: 38px;
+    border: 0; border-radius: 50%; cursor: pointer; color: #fff;
+    background: rgba(255, 255, 255, 0.16);
+    transition: background 0.2s ease;
+  }
+  .mm-close:hover { background: rgba(255, 255, 255, 0.28); }
+  .mm-avatar {
+    width: 84px; height: 84px; margin: 1.1rem auto 0.85rem;
+    border-radius: 50%; object-fit: cover; object-position: 50% 22%;
+    border: 3px solid rgba(255, 255, 255, 0.5);
+    display: block;
+  }
+  .mm-name { margin: 0; font-size: 1.25rem; font-weight: 700; letter-spacing: -0.01em; }
+  .mm-role { margin: 0.3rem 0 0; font-size: 0.83rem; line-height: 1.45; color: rgba(255, 255, 255, 0.78); }
+
+  .mm-body { flex: 1; padding: 1.3rem 1rem 0.4rem; }
+  .mm-group {
+    margin: 0 0 0.5rem; padding-left: 0.65rem;
+    font-size: 0.76rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase;
+    color: var(--slate-soft);
+  }
+  .mm-body ul { list-style: none; padding: 0; margin: 0 0 1.4rem; }
+  .mm-link {
+    display: flex; align-items: center; gap: 0.85rem;
+    padding: 0.72rem 0.9rem; border-radius: 999px;
+    font-size: 1rem; color: var(--ink); text-decoration: none;
+    border: 1px solid transparent;
+    transition: background 0.18s ease, border-color 0.18s ease, color 0.18s ease;
+  }
+  .mm-link :global(svg) { color: var(--slate); flex: none; transition: color 0.18s ease; }
+  .mm-link:hover { background: rgba(15, 76, 129, 0.06); }
+  /* the current page is the one pill in the list, matching the nav pill above */
+  .mm-link.active {
+    background: #fff; border-color: var(--blue-line);
+    box-shadow: var(--shadow-sm); font-weight: 600; color: var(--blue);
+  }
+  .mm-link.active :global(svg) { color: var(--blue); }
+
+  .mm-foot {
+    flex: none; padding: 0.4rem 1.15rem 1.4rem;
+    border-top: 1px solid var(--blue-line); margin-top: auto; padding-top: 1.1rem;
+  }
+  .mm-foot-note { margin: 0.7rem 0 0; text-align: center; font-size: 0.8rem; color: var(--slate-soft); }
+
+  @media (max-width: 1080px) {
+    .nav-link { padding: 0.5rem 0.8rem; font-size: 0.9rem; }
+  }
+  @media (max-width: 940px) {
+    .main-nav { display: none; }
+    .header-call { padding: 0.7rem 1.1rem; }
+    .header-inner { min-height: 74px; }
+  }
+  @media (max-width: 620px) {
+    .header-actions { display: none; }
+    .nav-toggle {
+      display: flex;
+      width: 52px; height: 52px;
+      border-width: 1.5px; border-color: var(--blue);
+      background: var(--blue-soft);
+    }
+    .nav-toggle span { width: 24px; height: 2.5px; background: var(--blue); }
+    .brand-mark { width: 42px; height: 42px; }
+    .brand-text { font-size: 1.32rem; font-weight: 800; }
+    .header-inner { padding-top: 0; gap: 0.75rem; }
+  }
+  @media (min-width: 621px) and (max-width: 940px) {
+    .nav-toggle { display: flex; }
+  }
+</style>
+
+<script>
+  const header = document.getElementById('site-header');
+  const isOverlay = header?.dataset.overlay === 'true';
+
+  // On overlay pages the bar stays glassy until the hero has scrolled past,
+  // then it drops in as a solid sticky bar. Elsewhere it condenses immediately.
+  let trigger = 8;
+  const measure = () => {
+    if (!isOverlay) { trigger = 8; return; }
+    // #hero on the home page, .page-hero on the inner pages that use a hero card
+    const hero = document.getElementById('hero') ?? document.querySelector<HTMLElement>('.page-hero');
+    trigger = hero ? Math.max(8, hero.offsetHeight - 100) : 8;
+  };
+  const onScroll = () => header?.classList.toggle('condensed', window.scrollY > trigger);
+  measure();
+  onScroll();
+  window.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener('resize', () => { measure(); onScroll(); }, { passive: true });
+
+  // Right-hand drawer. Open state lives on the wrapper as [data-open]; the panel
+  // and scrim animate off that, so the element stays in the DOM and transitions.
+  const toggle = document.querySelector<HTMLButtonElement>('.nav-toggle');
+  const menu = document.getElementById('mobile-menu');
+  const setMenu = (open: boolean) => {
+    if (!menu || !toggle) return;
+    menu.toggleAttribute('data-open', open);
+    toggle.setAttribute('aria-expanded', String(open));
+    toggle.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+    // stop the page behind the drawer from scrolling with it
+    document.body.style.overflow = open ? 'hidden' : '';
+    if (open) menu.querySelector<HTMLElement>('.mm-close')?.focus();
+    else toggle.focus();
+  };
+
+  toggle?.addEventListener('click', () => setMenu(toggle.getAttribute('aria-expanded') !== 'true'));
+  menu?.querySelectorAll('[data-menu-close]').forEach((el) =>
+    el.addEventListener('click', () => setMenu(false)),
+  );
+  // links close it too, so an in-page hash target is not left behind the drawer
+  menu?.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => setMenu(false)));
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && menu?.hasAttribute('data-open')) setMenu(false);
+  });
+</script>

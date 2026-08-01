@@ -1,0 +1,32 @@
+---
+interface Props {
+  video: string;
+  poster: string;
+  index?: number;
+}
+const { video, poster, index = 1 } = Astro.props;
+---
+<div class="story-video-card">
+  <video
+    class="svc-video"
+    poster={poster}
+    preload="none"
+    controls
+    playsinline
+    aria-label={`Patient story ${index}`}
+  >
+    <source src={video} type="video/mp4" />
+  </video>
+</div>
+
+<style>
+  .story-video-card {
+    position: relative; aspect-ratio: 9 / 16; border-radius: var(--radius-lg); overflow: hidden;
+    background: var(--ink); box-shadow: var(--shadow-sm);
+    transition: transform 0.32s cubic-bezier(.2,.8,.2,1), box-shadow 0.32s ease;
+  }
+  .story-video-card:hover, .story-video-card:focus-within {
+    transform: translateY(-6px); box-shadow: var(--shadow-lg);
+  }
+  .svc-video { width: 100%; height: 100%; object-fit: cover; display: block; }
+</style>

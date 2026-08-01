@@ -1,0 +1,29 @@
+{
+  "settings": {
+    "name": "Dr. Sajjad Yousafzai",
+    "tagline": "Consultant Vascular, General and Laparoscopic Surgeon",
+    "phone": "+923058577836",
+    "phoneDisplay": "0305 8577836",
+    "whatsapp": "923058577836",
+    "whatsappDisplay": "0305 8577836",
+    "email": "[EMAIL TO CONFIRM]",
+    "addressLine": "Pak Medical Centre, Room No. 337/348, Khyber Bazar",
+    "addressLocality": "Peshawar",
+    "addressRegion": "Khyber Pakhtunkhwa",
+    "postalCode": "25000",
+    "country": "PK",
+    "landmark": "PTCL Colony, Peshawar",
+    "geo": { "lat": 34.0055, "lng": 71.5711 },
+    "mapEmbed": "https://www.google.com/maps?q=Pak+Medical+Centre,+Khyber+Bazar,+Peshawar&z=17&output=embed",
+    "mapDirections": "https://maps.google.com/?q=Pak+Medical+Centre+Khyber+Bazar+PTCL+Colony+Peshawar",
+    "clinicHours": "Monday to Saturday, 3:00 PM to 8:00 PM",
+    "onlineHours": "Monday to Saturday, evening slots",
+    "consultationFee": "[FEE TO CONFIRM]",
+    "socials": [
+      { "label": "Marham", "url": "[MARHAM PROFILE URL TO CONFIRM]" },
+      { "label": "Oladoc", "url": "[OLADOC PROFILE URL TO CONFIRM]" },
+      { "label": "Facebook", "url": "[FACEBOOK PROFILE URL TO CONFIRM]" }
+    ],
+    "defaultOgImage": "/og/default.png"
+  }
+}

@@ -1,0 +1,87 @@
+{
+  "$ref": "#/definitions/services",
+  "definitions": {
+    "services": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string"
+        },
+        "medicalTerm": {
+          "type": "string"
+        },
+        "order": {
+          "type": "number"
+        },
+        "iconKey": {
+          "type": "string"
+        },
+        "summary": {
+          "type": "string"
+        },
+        "insideBody": {
+          "type": "string"
+        },
+        "signs": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "treatment": {
+          "type": "string"
+        },
+        "recovery": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "faqs": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "question": {
+                "type": "string"
+              },
+              "answer": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "question",
+              "answer"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "seoTitle": {
+          "type": "string"
+        },
+        "seoDescription": {
+          "type": "string"
+        },
+        "$schema": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "title",
+        "medicalTerm",
+        "order",
+        "iconKey",
+        "summary",
+        "insideBody",
+        "signs",
+        "treatment",
+        "recovery",
+        "faqs",
+        "seoTitle",
+        "seoDescription"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}

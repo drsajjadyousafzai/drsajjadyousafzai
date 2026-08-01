@@ -1,0 +1,12 @@
+---
+/**
+ * Trailing arrow chip for CTA buttons. Two arrows sit in the same circle so that
+ * on hover the first sweeps out to the right while the second sweeps in behind it.
+ * Styling lives with .btn in global.css so every button variant tints it correctly.
+ */
+import Icon from './Icon.astro';
+---
+<span class="btn-arrow" aria-hidden="true">
+  <Icon name="arrow" size={16} />
+  <Icon name="arrow" size={16} />
+</span>

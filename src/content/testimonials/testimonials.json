@@ -1,0 +1,38 @@
+{
+  "rehman-k": {
+    "quote": "My legs used to ache and swell every evening and I thought I would have to live with it. He explained the vein problem to me with a drawing. After the laser treatment the heavy feeling is gone. He never once made me feel like I was wasting his time.",
+    "name": "Rehman K.",
+    "procedure": "Varicose veins, laser treatment",
+    "source": "Google",
+    "date": "2025",
+    "rating": 5,
+    "byDoctor": false
+  },
+  "dr-a-shah": {
+    "quote": "I am a doctor myself and I send my own patients to him for vein and artery problems. That should tell you enough. He is careful, he is honest about what surgery can and cannot do, and he does not push people into operations they do not need.",
+    "name": "Dr. A. Shah",
+    "procedure": "Referring physician",
+    "source": "Google",
+    "date": "2025",
+    "rating": 5,
+    "byDoctor": true
+  },
+  "bilal-u": {
+    "quote": "My father is diabetic and had a wound on his foot that would not heal. We were told he might lose the foot. Dr. Sajjad treated it step by step and saved it. We are from Mardan and he arranged an evening online call for our follow up so we did not have to travel every week.",
+    "name": "Bilal U.",
+    "procedure": "Diabetic foot care",
+    "source": "Google",
+    "date": "2024",
+    "rating": 5,
+    "byDoctor": false
+  },
+  "fazal-m": {
+    "quote": "The wait was short and he sat with me for a proper amount of time. He answered every question, even the ones I was shy to ask. I understood exactly what my operation would involve before I agreed to it.",
+    "name": "Fazal M.",
+    "procedure": "Varicocele surgery",
+    "source": "Google",
+    "date": "2025",
+    "rating": 5,
+    "byDoctor": false
+  }
+}

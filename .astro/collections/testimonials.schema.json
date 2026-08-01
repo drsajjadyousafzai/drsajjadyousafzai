@@ -1,0 +1,52 @@
+{
+  "$ref": "#/definitions/testimonials",
+  "definitions": {
+    "testimonials": {
+      "type": "object",
+      "properties": {
+        "$schema": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "quote": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "procedure": {
+            "type": "string"
+          },
+          "source": {
+            "type": "string"
+          },
+          "date": {
+            "type": "string"
+          },
+          "rating": {
+            "type": "number",
+            "minimum": 1,
+            "maximum": 5
+          },
+          "byDoctor": {
+            "type": "boolean",
+            "default": false
+          }
+        },
+        "required": [
+          "quote",
+          "name",
+          "procedure",
+          "source",
+          "date",
+          "rating"
+        ],
+        "additionalProperties": false
+      }
+    }
+  },
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}

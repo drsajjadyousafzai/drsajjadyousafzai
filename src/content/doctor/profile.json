@@ -1,0 +1,36 @@
+{
+  "profile": {
+  "name": "Dr. Sajjad Yousafzai",
+  "shortDescription": "Known as the Rescue Surgeon, a specialist for blood vessel problems in Peshawar, with over ten years in surgery at the largest hospital in the province.",
+  "hospital": "Lady Reading Hospital MTI, Peshawar",
+  "hospitalNote": "Lady Reading Hospital is a teaching hospital with more than 1,800 beds. It was started in 1924 and is one of the main hospitals that the whole province is sent to for serious cases.",
+  "bio": [
+    "Dr. Sajjad Yousafzai is a vascular surgeon, known to many patients as the Rescue Surgeon. That means he treats problems with the blood vessels: the veins and arteries that carry blood around your body. He also does general and keyhole (laparoscopic) surgery.",
+    "Dr. Sajjad Yousafzai works across endovascular surgery (treating blood vessels from inside, without large cuts) and microvascular surgery (operating under magnification on very small vessels). He is a superspecialist in varicocele microscopic surgery, a fine, precise operation for male infertility caused by swollen veins in the scrotum.",
+    "He has spent more than ten years in surgery. About six of those years were in general surgery, and the last four have been given fully to vascular work. He treats these problems every week, so they are not unusual to him.",
+    "He works as a Consultant Vascular and General Surgeon at Lady Reading Hospital in Peshawar, the biggest hospital in the province. He also sees patients privately at Pak Medical Center in Khyber Bazar.",
+    "Patients say the same thing again and again: he takes his time, he explains what is wrong in words you can follow, and he does not rush you out of the room. Some of his patients are sent to him by other doctors who trust him with their own cases."
+  ],
+  "quote": "I want you to leave my room understanding your own body. If you know what is wrong and why, the treatment makes sense and you are not frightened.",
+  "qualifications": [
+    { "short": "MBBS (Khyber Medical University)", "plain": "His basic medical degree, the five-year training every doctor must complete." },
+    { "short": "MCPS (CPSP)", "plain": "A postgraduate qualification in surgery from the College of Physicians and Surgeons Pakistan." },
+    { "short": "FCPS General Surgery (CPSP)", "plain": "The senior specialist qualification in surgery. This is the main exam a surgeon must pass to work as a consultant." },
+    { "short": "Fellowship in Vascular Surgery", "plain": "Extra dedicated training focused only on the blood vessels, the veins and arteries." },
+    { "short": "CHPE (HSA Islamabad)", "plain": "A qualification in medical teaching, for training junior doctors." },
+    { "short": "Superspecialist in Varicocele Microscopic Surgery", "plain": "Advanced, focused training in the microscopic surgery used to treat varicocele, a common cause of male infertility." }
+  ],
+  "timeline": [
+    { "year": "MBBS", "title": "Medical school", "detail": "Completed his basic medical degree at Khyber Medical University." },
+    { "year": "FCPS", "title": "Became a surgeon", "detail": "Passed the senior specialist surgery exam with the College of Physicians and Surgeons Pakistan." },
+    { "year": "Fellowship", "title": "Trained in vascular surgery", "detail": "Took extra dedicated training focused only on the veins and arteries." },
+    { "year": "Now", "title": "Consultant at Lady Reading Hospital", "detail": "Treats vascular and general surgery cases at the largest hospital in the province, and sees patients privately in Khyber Bazar." }
+  ],
+  "stats": [
+    { "value": "10+", "label": "years in surgery" },
+    { "value": "460+", "label": "verified patient reviews" },
+    { "value": "5.0", "label": "average rating on Google" },
+    { "value": "100%", "label": "reported patient satisfaction" }
+  ]
+  }
+}

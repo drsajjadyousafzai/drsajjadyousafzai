@@ -1,0 +1,89 @@
+---
+import { getCollection, getEntry } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Icon from '../../components/Icon.astro';
+import BtnArrow from '../../components/BtnArrow.astro';
+import PatientStoryCard from '../../components/PatientStoryCard.astro';
+
+const site = (await getEntry('siteSettings', 'settings'))!.data;
+const videoStories = (await getCollection('patientStories'))
+  .map((s) => s.data)
+  .sort((a, b) => a.order - b.order);
+
+const waText = encodeURIComponent('Assalam o alaikum, I would like to book an appointment with Dr. Sajjad Yousafzai.');
+const waLink = `https://wa.me/${site.whatsapp}?text=${waText}`;
+
+const seoTitle = 'Patient Stories | Dr. Sajjad Yousafzai, Vascular Surgeon Peshawar';
+const seoDesc = 'Watch real patients of Dr. Sajjad Yousafzai talk about their treatment and recovery, in their own words.';
+---
+<BaseLayout title={seoTitle} description={seoDesc} path="/cases">
+
+  <!-- ==================== PAGE INTRO ==================== -->
+  <section class="section--tight page-intro">
+    <div class="container">
+      <div class="section-head section-head--center">
+        <h1 class="reveal" data-delay="80">Patient stories</h1>
+        <p class="reveal" data-delay="140">Real patients of Dr. Sajjad Yousafzai talk about what brought them in, their treatment and their recovery, in their own words.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== VIDEO GRID ==================== -->
+  <section class="section stories-page-section" id="stories-grid">
+    <div class="container">
+      <div class="stories-page-grid">
+        {videoStories.map((v, i) => (
+          <div class="reveal" data-delay={String((i % 3) * 90)}>
+            <PatientStoryCard video={v.video} poster={v.poster} index={i + 1} />
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== FINAL CTA ==================== -->
+  <section class="section final-cta-section">
+    <div class="container">
+      <div class="final-cta reveal">
+        <div class="fc-copy">
+          <h2>Your legs, and your peace of mind, are worth a proper look</h2>
+          <p>Book an appointment, or call now and speak to the clinic. If you are travelling from outside Peshawar, ask about an evening online video consultation. Fees are always discussed openly, with no hidden charges.</p>
+        </div>
+        <div class="fc-actions">
+          <a href="/contact" class="btn btn--primary btn--pulse btn--wide">Book an Appointment<BtnArrow /></a>
+          <a href={waLink} class="btn btn--ghost btn--ghost-light btn--wide" rel="noopener"><Icon name="whatsapp" size={18} />WhatsApp us</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</BaseLayout>
+
+<style>
+  .page-intro { background: var(--blue-soft); }
+
+  .stories-page-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.4rem;
+    max-width: 1000px; margin-inline: auto;
+  }
+
+  /* ---------- FINAL CTA (matches homepage) ---------- */
+  .final-cta { background: linear-gradient(150deg, var(--blue) 0%, var(--ink) 100%); border-radius: var(--radius-lg); padding: clamp(2rem, 5vw, 3.5rem);
+    display: grid; grid-template-columns: 1.3fr 0.7fr; gap: clamp(1.5rem, 4vw, 3rem); align-items: center; box-shadow: var(--shadow-lg); position: relative; overflow: hidden; }
+  .fc-copy h2 { color: #fff; margin: 0.6rem 0 1rem; }
+  .fc-copy p { color: #C7D6E6; }
+  .fc-actions { display: grid; gap: 0.7rem; }
+  .btn--ghost-light { border-color: rgba(255,255,255,0.3); color: #fff; }
+  .btn--ghost-light:hover { border-color: #fff; color: #fff; background: rgba(255,255,255,0.08); }
+  .btn--ghost-light::before { background: linear-gradient(100deg, transparent 22%, rgba(255,255,255,0.22) 46%, transparent 68%); }
+  .btn--ghost-light :global(.btn-arrow) { background: rgba(255,255,255,0.18); }
+  .btn--ghost-light:hover :global(.btn-arrow) { background: rgba(255,255,255,0.28); }
+
+  @media (max-width: 960px) {
+    .final-cta { grid-template-columns: 1fr; }
+    .stories-page-grid { grid-template-columns: repeat(2, 1fr); max-width: 620px; }
+  }
+  @media (max-width: 620px) {
+    .stories-page-grid { grid-template-columns: 1fr; max-width: 340px; }
+  }
+</style>
