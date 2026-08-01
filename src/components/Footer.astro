@@ -167,6 +167,8 @@ const year = new Date().getFullYear();
     .footer-portrait { width: min(320px, 80%); }
     .footer-portrait :global(img) { aspect-ratio: 4/3; object-position: 50% 22%; }
     .footer-col ul { justify-items: center; }
+    /* stacked in one column the column headings get lost, so they are stepped up */
+    .footer-col h3, .footer-contact h3 { font-size: 1rem; letter-spacing: 0.12em; }
     .nap { justify-content: center; }
     .footer-cta { margin-inline: auto; }
     .footer-bottom { justify-content: center; text-align: center; }

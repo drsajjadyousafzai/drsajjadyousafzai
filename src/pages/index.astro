@@ -615,6 +615,11 @@ const jsonLd = [
     .visit-step { top: calc(9vh + var(--i) * 14px); margin-bottom: 2.4rem; }
     .visit-card { padding: 1.6rem 1.4rem 1.8rem; border-radius: var(--radius); }
 
+    /* on a phone the inset frame just reads as a white border, so the hero
+       card goes full-bleed and square-cornered */
+    .hero { --hero-pad: 0px; }
+    .hero-card { border-radius: 0 0 22px 22px; box-shadow: none; }
+
     .hero-actions { gap: 0.9rem 1.1rem; }
     /* the WhatsApp line would crowd the copy against his face, and the fixed
        quick-contact bar already offers the same tap */

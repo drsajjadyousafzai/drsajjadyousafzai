@@ -20,7 +20,6 @@ const nav = [
   { label: 'Patient Stories', href: '/cases', icon: 'quote' },
   { label: 'Contact', href: '/contact', icon: 'map' },
 ];
-const waText = encodeURIComponent('Assalam o alaikum, I would like to book an appointment with Dr. Sajjad Yousafzai.');
 const isActive = (href: string) => href === '/' ? path === '/' : path.startsWith(href);
 const isHome = path === '/';
 ---
@@ -93,8 +92,6 @@ const isHome = path === '/';
         <p class="mm-group">Get in touch</p>
         <ul>
           <li><a href={`tel:${site.phone}`} class="mm-link"><Icon name="phone" size={21} />{site.phoneDisplay}</a></li>
-          <li><a href={`https://wa.me/${site.whatsapp}?text=${waText}`} class="mm-link"><Icon name="whatsapp" size={21} />WhatsApp</a></li>
-          <li><a href="/contact#booking" class="mm-link"><Icon name="clock" size={21} />Clinic hours</a></li>
         </ul>
       </nav>
 

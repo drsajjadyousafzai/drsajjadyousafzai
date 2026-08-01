@@ -390,8 +390,11 @@ const jsonLd = [
     /* only the toggle is left on a phone: any wider and the cut starts eating
        into the logo and the doctor's name */
     .ph-card { --notch-w: clamp(96px, 28vw, 128px); --notch-h: 88px; }
-    .ph-display { padding-bottom: 4.5rem; }
-    .ph-scroll { right: 1rem; bottom: 1rem; }
+    /* the arrow sits on the same line as the title instead of below it, so the
+       two share a centre line: the title's line box is shorter than the 46px
+       button, hence the small offset */
+    .ph-display { padding-bottom: 1.25rem; padding-right: 4.25rem; }
+    .ph-scroll { right: 1rem; bottom: calc(1.25rem - 5px); width: 46px; }
   }
 </style>
 
