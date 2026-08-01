@@ -52,3 +52,11 @@ for `TO CONFIRM` to find every spot, or edit the values in
       reception would suit a contact page better.
 - [ ] Confirm the short emergency note in the booking section should stay. The equivalent
       callout was removed from the homepage at the client's request.
+
+## Launch steps (do these at domain cutover, not before)
+- [ ] `public/robots.txt` is currently `Disallow: /` so the temporary Vercel URL stays out
+      of Google. Switch it to `Allow: /` when the custom domain goes live.
+- [ ] Confirm the production domain and point DNS at Vercel. `site` in `astro.config.mjs`
+      and `SITE_URL` in `src/lib/schema.ts` are both already set to
+      `https://drsajjadyousafzai.com` and must match whatever is registered.
+- [ ] Submit `sitemap-index.xml` in Google Search Console once the domain is live.

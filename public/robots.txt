@@ -1,4 +1,6 @@
+# Pre-launch: the site is on a temporary Vercel URL and must not be indexed.
+# At domain cutover, replace the Disallow line below with "Allow: /".
 User-agent: *
-Allow: /
+Disallow: /
 
 Sitemap: https://drsajjadyousafzai.com/sitemap-index.xml
