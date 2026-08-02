@@ -1,7 +1,7 @@
 ---
-title: "Arteriovenous fistula for dialysis"
+title: "Arteriovenous fistula"
 medicalTerm: "AV fistula creation and repair"
-order: 8
+order: 3
 iconKey: "fistula"
 summary: "Creating the fistula in the arm for dialysis, and repairing one that has stopped working."
 insideBody: "When the kidneys fail, dialysis does their job of cleaning the blood. For this, the machine needs a strong connection to your blood flow. A small operation joins an artery to a vein in your arm, usually at the wrist or elbow. Over some weeks this vein grows stronger and larger, giving a reliable point for the dialysis needles. This join is called a fistula."

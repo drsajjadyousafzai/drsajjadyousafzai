@@ -35,10 +35,10 @@ const year = new Date().getFullYear();
     </div>
 
     <div class="footer-col">
-      <h3>Care we provide</h3>
+      <h3>Care provided</h3>
       <ul>
         {services.slice(0, 8).map((s) => (
-          <li><a href={`/services#${s.id}`}>{s.data.title}</a></li>
+          <li><a href={`/services/${s.id}`}>{s.data.title}</a></li>
         ))}
       </ul>
     </div>

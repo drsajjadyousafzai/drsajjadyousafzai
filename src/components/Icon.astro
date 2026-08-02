@@ -78,6 +78,34 @@ const s = { width: size, height: size };
     <circle cx="12" cy="16.5" r="1" fill="currentColor" stroke="none" />
   </svg>
 )}
+{name === 'thoracic' && (
+  <svg {...s} viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class={className} aria-hidden="true">
+    <path d="M4 5c4 0 6 2 8 2s4-2 8-2" />
+    <path d="M8 7v4l6 9" />
+    <path d="M16 7v4l-2 3" />
+    <circle cx="14" cy="14" r="1.2" fill="currentColor" stroke="none" />
+  </svg>
+)}
+{name === 'toenail' && (
+  <svg {...s} viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class={className} aria-hidden="true">
+    <path d="M9 20c-3 0-4-2.5-4-5.5C5 9 7 4 12 4s7 5 7 10.5c0 3-1 5.5-4 5.5" />
+    <path d="M9 20c0-2 1.3-3 3-3s3 1 3 3" />
+  </svg>
+)}
+{name === 'hemorrhoid' && (
+  <svg {...s} viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class={className} aria-hidden="true">
+    <circle cx="12" cy="12" r="7" />
+    <circle cx="12" cy="12" r="3" />
+  </svg>
+)}
+{name === 'syringe' && (
+  <svg {...s} viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class={className} aria-hidden="true">
+    <path d="M20 4l-2.5 2.5" />
+    <path d="M16 3l2.5 2.5" />
+    <path d="M17 6l-9.5 9.5-3.5 5 5-3.5L18.5 7.5z" />
+    <path d="M9.5 13l-2-2M12 10.5l-2-2" />
+  </svg>
+)}
 {name === 'keyhole' && (
   <svg {...s} viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class={className} aria-hidden="true">
     <circle cx="12" cy="9" r="4" />

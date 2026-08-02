@@ -59,7 +59,7 @@ const isHome = path === '/';
      which would make it the containing block for this fixed element, so the
      drawer would be sized to the bar and its off-screen panel would widen the
      page. -->
-<div class="mobile-menu" id="mobile-menu" role="dialog" aria-modal="true" aria-label="Menu">
+<div class="mobile-menu" id="mobile-menu" role="dialog" aria-modal="true" aria-label="Menu" inert>
     <div class="mm-scrim" data-menu-close></div>
     <div class="mm-panel">
       <div class="mm-head">
@@ -202,7 +202,7 @@ const isHome = path === '/';
     border: 1px solid var(--blue-line); border-radius: 13px; cursor: pointer;
     transition: border-color 0.25s ease, background 0.25s ease;
   }
-  .nav-toggle span { display: block; height: 2px; width: 20px; margin: 0 auto; background: var(--ink); border-radius: 2px; transition: transform 0.2s, opacity 0.2s, background 0.25s; }
+  .nav-toggle span { display: block; height: 2px; width: 20px; margin: 0 auto; background: var(--ink); border-radius: 2px; transition: transform 0.4s cubic-bezier(0.33, 1, 0.68, 1), opacity 0.3s ease, background 0.25s; }
   /* a glass chip with blue bars, matching the nav pill: the toggle has to stay
      legible both on a dark hero and on the pale corner cut of the contact hero,
      where a white hamburger would disappear */
@@ -225,14 +225,21 @@ const isHome = path === '/';
     /* the closed panel is parked past the right edge; clipping it here keeps it
        from ever widening the page */
     overflow: hidden;
-    visibility: hidden;
+    /* not visibility:hidden: that would flip in the same style recalc as the
+       transform transition below starts, so the browser has no painted "closed"
+       frame to animate from and the panel just snaps open instead of sliding.
+       pointer-events keeps it inert while closed without breaking the transition. */
+    pointer-events: none;
   }
-  .mobile-menu[data-open] { visibility: visible; }
+  .mobile-menu[data-open] { pointer-events: auto; }
   .mm-scrim {
     position: absolute; inset: 0;
-    background: rgba(7, 26, 47, 0.5);
-    backdrop-filter: blur(2px);
-    opacity: 0; transition: opacity 0.3s ease;
+    /* no backdrop-filter here: blurring the whole viewport every frame while it
+       fades in, at the same time the panel is sliding, is expensive enough on
+       mobile GPUs to drop frames and read as a jerk. A flat tint is just as
+       readable and stays on the compositor. */
+    background: rgba(7, 26, 47, 0.55);
+    opacity: 0; transition: opacity 0.52s cubic-bezier(0.33, 1, 0.68, 1);
   }
   .mobile-menu[data-open] .mm-scrim { opacity: 1; }
 
@@ -244,10 +251,19 @@ const isHome = path === '/';
     border-radius: var(--radius-lg) 0 0 var(--radius-lg);
     box-shadow: -24px 0 60px rgba(7, 26, 47, 0.28);
     overflow-y: auto; overscroll-behavior: contain;
-    transform: translateX(100%);
-    transition: transform 0.34s cubic-bezier(0.2, 0.8, 0.2, 1);
+    /* the old curve (0.2,0.8,0.2,1) front-loaded ~90% of the travel into the
+       first 60ms of a 340ms transition, reading as a snap-then-crawl jerk.
+       easeOutCubic spreads the deceleration across the whole duration instead,
+       and half a second is slow enough to read as a glide rather than a flick. */
+    transition: transform 0.52s cubic-bezier(0.33, 1, 0.68, 1);
+    /* promoted up front so the first frame of the slide is not also the frame
+       that creates the compositor layer */
+    will-change: transform;
+    transform: translateX(100%) translateZ(0);
+    backface-visibility: hidden;
   }
-  .mobile-menu[data-open] .mm-panel { transform: none; }
+  /* translateZ kept so the element never leaves its compositor layer mid-slide */
+  .mobile-menu[data-open] .mm-panel { transform: translateX(0) translateZ(0); }
   @media (prefers-reduced-motion: reduce) {
     .mm-panel, .mm-scrim { transition: none; }
   }
@@ -358,15 +374,36 @@ const isHome = path === '/';
   // and scrim animate off that, so the element stays in the DOM and transitions.
   const toggle = document.querySelector<HTMLButtonElement>('.nav-toggle');
   const menu = document.getElementById('mobile-menu');
+  // matches the .mm-panel transform duration; 0 when the panel does not animate
+  const PANEL_MS = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 520;
+  let settle: number | undefined;
+
   const setMenu = (open: boolean) => {
     if (!menu || !toggle) return;
-    menu.toggleAttribute('data-open', open);
+    window.clearTimeout(settle);
+
     toggle.setAttribute('aria-expanded', String(open));
     toggle.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
-    // stop the page behind the drawer from scrolling with it
-    document.body.style.overflow = open ? 'hidden' : '';
-    if (open) menu.querySelector<HTMLElement>('.mm-close')?.focus();
-    else toggle.focus();
+
+    // Everything that costs layout is kept off the frames the slide runs on.
+    // inert must come off *before* the drawer opens (you cannot focus into an
+    // inert subtree), but going inert on close waits until the panel is gone.
+    if (open) menu.removeAttribute('inert');
+
+    // the open bit is flipped on its own frame, after the attribute churn above
+    // has already been styled, so the transition starts from a settled state
+    requestAnimationFrame(() => {
+      menu.toggleAttribute('data-open', open);
+
+      // The scroll lock resizes the viewport (scrollbar) and focus() can scroll
+      // an ancestor into view; both force layout, so they land after the panel
+      // has finished travelling rather than stuttering its first frames.
+      settle = window.setTimeout(() => {
+        document.body.style.overflow = open ? 'hidden' : '';
+        if (open) menu.querySelector<HTMLElement>('.mm-close')?.focus({ preventScroll: true });
+        else { menu.setAttribute('inert', ''); toggle.focus({ preventScroll: true }); }
+      }, PANEL_MS);
+    });
   };
 
   toggle?.addEventListener('click', () => setMenu(toggle.getAttribute('aria-expanded') !== 'true'));

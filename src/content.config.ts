@@ -63,6 +63,12 @@ const services = defineCollection({
     faqs: z.array(faqItem),
     seoTitle: z.string(),
     seoDescription: z.string(),
+    treatmentOptions: z.array(z.object({
+      title: z.string(),
+      body: z.string(),
+      iconKey: z.string(),
+      photoId: z.string().optional(),
+    })).optional(),
   }),
 });
 

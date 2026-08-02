@@ -83,7 +83,7 @@ export function procedureSchema(service: { title: string; medicalTerm: string; s
     name: service.medicalTerm,
     alternateName: service.title,
     description: service.summary,
-    url: `${SITE_URL}/services#${service.slug}`,
+    url: `${SITE_URL}/services/${service.slug}`,
     performer: { '@id': `${SITE_URL}/#physician` },
   };
 }

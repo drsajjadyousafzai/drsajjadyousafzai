@@ -1,0 +1,472 @@
+---
+import { getEntry } from 'astro:content';
+import { Image } from 'astro:assets';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Icon from '../components/Icon.astro';
+import BtnArrow from '../components/BtnArrow.astro';
+import { physicianSchema, personSchema, breadcrumbSchema } from '../lib/schema';
+import portraitPhoto from '../assets/doctor/sajjad-about.jpg';
+import gownPhoto from '../assets/doctor/dr-sajjad-about.webp';
+import ceremonyPhoto from '../assets/doctor/dr-sajjad-ceremony.webp';
+
+const site = (await getEntry('siteSettings', 'settings'))!.data;
+const doctor = (await getEntry('doctor', 'profile'))!.data;
+
+const seoTitle = 'About Dr. Sajjad Yousafzai | Vascular Surgeon in Peshawar';
+const seoDesc = 'Meet Dr. Sajjad Yousafzai, consultant vascular, general and laparoscopic surgeon at Lady Reading Hospital Peshawar. His training, his qualifications and how he works with patients.';
+
+const jsonLd = [
+  physicianSchema(site, { rating: 5, count: 460 }),
+  personSchema(site),
+  breadcrumbSchema([
+    { name: 'Home', path: '/' },
+    { name: 'About', path: '/about' },
+  ]),
+];
+---
+<BaseLayout title={seoTitle} description={seoDesc} path="/about" jsonLd={jsonLd} heroOverlay>
+
+  <!-- ============================ PAGE HERO ============================
+       Same photo card as the contact page: a step is cut out of the top-right
+       corner so the floating header's call button sits in clear space. -->
+  <section class="page-hero">
+    <div class="container">
+      <div class="ph-card reveal">
+        <Image
+          src={ceremonyPhoto}
+          alt="Dr. Sajjad Yousafzai, consultant vascular surgeon in Peshawar"
+          class="ph-photo"
+          widths={[720, 896]}
+          sizes="(max-width: 1240px) 100vw, 1160px"
+          loading="eager"
+          fetchpriority="high"
+        />
+        <span class="ph-scrim" aria-hidden="true"></span>
+
+        <span class="ph-notch" aria-hidden="true"></span>
+
+        <p class="ph-display">About</p>
+
+        <a href="#profile" class="ph-scroll" aria-label="Jump to the profile">
+          <Icon name="arrow" size={22} />
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================= INTRO + SHOWCASE ======================= -->
+  <section class="section profile-section" id="profile">
+    <div class="container">
+      <div class="section-head section-head--center">
+        <p class="eyebrow reveal">The surgeon you will meet</p>
+        <h1 class="reveal" data-delay="80">Meet Dr. Sajjad Yousafzai</h1>
+        <p class="reveal" data-delay="140">{doctor.shortDescription}</p>
+      </div>
+
+      <!-- portrait in the middle, a stat card and a specialism card either side -->
+      <div class="showcase reveal" data-delay="120">
+        <span class="sc-glow" aria-hidden="true"></span>
+        <div class="showcase-grid">
+          <article class="sc-card sc-card--stat">
+            <span class="sc-mesh" aria-hidden="true"></span>
+            <span class="sc-pill">Experience</span>
+            <p class="sc-value tnum" data-count="10" data-suffix="+">0+</p>
+            <p class="sc-label">Years in surgery, the last four given fully to vascular work</p>
+          </article>
+
+          <div class="sc-portrait">
+            <Image
+              src={portraitPhoto}
+              alt="Dr. Sajjad Yousafzai, consultant vascular, general and laparoscopic surgeon"
+              class="sc-photo"
+              width={560}
+              height={700}
+              loading="lazy"
+            />
+          </div>
+
+          <article class="sc-card sc-card--icon">
+            <span class="sc-plaque" aria-hidden="true"><Icon name="microscope" size={42} /></span>
+            <p class="sc-label sc-label--lead">Vascular, endovascular and microvascular surgeon.</p>
+            <p class="sc-note">Superspecialist in varicocele microscopic surgery, a fine, precise operation for male infertility caused by swollen veins in the scrotum.</p>
+          </article>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ========================== QUALIFICATIONS ========================== -->
+  <section class="section quals-section">
+    <div class="container">
+      <div class="section-head section-head--center">
+        <h2 class="reveal" data-delay="80">His Qualifications, and What Each One Means</h2>
+        <p class="reveal" data-delay="140">Medical letters after a name tell you very little on their own. Here is what each of them stands for.</p>
+      </div>
+
+      <div class="quals-grid">
+        <div class="quals-photo reveal">
+          <Image
+            src={gownPhoto}
+            alt="Dr. Sajjad Yousafzai in academic gown at his convocation"
+            class="qp-photo"
+            width={560}
+            height={746}
+            loading="lazy"
+          />
+        </div>
+        <ul class="quals-list">
+          {doctor.qualifications.map((q, i) => (
+            <li class="qual-item qual-item--stack" style={`--i:${i}`}>
+              <span class="qi-check" aria-hidden="true"><Icon name="check" size={15} /></span>
+              <div>
+                <strong>{q.short}</strong>
+                <span>{q.plain}</span>
+              </div>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================= TIMELINE ============================= -->
+  <section class="section path-section">
+    <div class="container">
+      <div class="section-head section-head--center">
+        <h2 class="reveal" data-delay="80">The Path He Took</h2>
+        <p class="reveal" data-delay="140">Medical school, then the specialist exams, then years of dedicated vascular training.</p>
+      </div>
+      <div class="path-list-wrap">
+        <ol class="path-list">
+        {doctor.timeline.map((t, i) => (
+          <li class="path-step reveal" data-delay={String((i % 4) * 70)}>
+            <span class="ps-dot" aria-hidden="true"></span>
+            <span class="ps-year">{t.year}</span>
+            <h3>{t.title}</h3>
+            <p>{t.detail}</p>
+          </li>
+        ))}
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================= HOSPITAL ============================= -->
+  <section class="section hospital-section">
+    <div class="container hospital-grid">
+      <div class="hospital-copy">
+       
+        <h2 class="reveal" data-delay="80">Where He Works</h2>
+        <p class="reveal" data-delay="120">{doctor.bio[3]}</p>
+        
+        <ul class="hospital-facts reveal" data-delay="200">
+          <li><span class="hf-icon" aria-hidden="true"><Icon name="clock" size={19} /></span>
+            <div><strong>Clinic hours</strong><span>{site.clinicHours}</span></div></li>
+          <li><span class="hf-icon" aria-hidden="true"><Icon name="stethoscope" size={19} /></span>
+            <div><strong>Online video consultation</strong><span>{site.onlineHours}</span></div></li>
+        </ul>
+        <div class="hospital-actions reveal" data-delay="240">
+          <a href="/contact" class="btn btn--primary">Book an appointment<BtnArrow /></a>
+          <a href={`tel:${site.phone}`} class="btn btn--ghost"><Icon name="phone" size={18} />{site.phoneDisplay}</a>
+        </div>
+      </div>
+      <figure class="hospital-figure reveal" data-delay="120">
+        <Image
+          src={ceremonyPhoto}
+          alt="Dr. Sajjad Yousafzai receiving his fellowship at the College of Physicians and Surgeons Pakistan"
+          class="hf-photo"
+          width={900}
+          height={600}
+          loading="lazy"
+        />
+        <figcaption>Receiving his fellowship at the College of Physicians and Surgeons Pakistan.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+
+</BaseLayout>
+
+<style>
+  /* =====================================================================
+     PAGE HERO
+     Mirrors the contact page: a wide photo card with a step cut out of the
+     top-right corner. The cut is a paper-coloured block, and the two places
+     where it meets the card edge are rounded with radial-gradient masks,
+     because CSS has no concave border-radius. Geometry is driven by the
+     three --notch-* variables.
+     ===================================================================== */
+  .page-hero { padding-top: clamp(0.75rem, 1.5vw, 1.25rem); }
+
+  .ph-card {
+    --card-r: clamp(20px, 2.2vw, 32px);
+    --notch-w: clamp(150px, 20vw, 250px);
+    --notch-h: clamp(72px, 7.5vw, 96px);
+    --notch-r: clamp(14px, 1.6vw, 24px);
+    --notch-bg: var(--paper);
+    --bleed: clamp(0.5rem, 2.5vw, 2.5rem);
+    margin-inline: calc(var(--bleed) * -1);
+    width: calc(100% + var(--bleed) * 2);
+    position: relative; isolation: isolate; overflow: hidden;
+    min-height: clamp(280px, 36vw, 450px);
+    display: flex; align-items: flex-end;
+    border-radius: var(--card-r);
+    background: var(--ink);
+    box-shadow: 0 34px 60px -26px rgba(7, 26, 47, 0.28);
+  }
+  /* the portrait is square and the band is wide, so only the vertical crop is a
+     real choice. Anchored to the top of the photo: any lower and the floating
+     header lands across his face instead of his hair, and the display word
+     below eats into his chin rather than his collar. */
+  .ph-photo { position: absolute; inset: 0; z-index: -2; width: 100%; height: 100%; object-fit: cover; object-position: 50% 0%; }
+  .ph-scrim {
+    position: absolute; inset: 0; z-index: -1;
+    background:
+      linear-gradient(90deg, rgba(7,26,47,0.82) 0%, rgba(7,26,47,0.5) 40%, rgba(7,26,47,0.2) 70%, rgba(7,26,47,0.3) 100%),
+      linear-gradient(0deg, rgba(7,26,47,0.8) 0%, rgba(7,26,47,0.14) 58%, transparent 100%);
+  }
+
+  .ph-notch {
+    position: absolute; top: 0; right: 0; z-index: 3;
+    width: var(--notch-w); height: var(--notch-h);
+    background: var(--notch-bg);
+    border-bottom-left-radius: var(--notch-r);
+  }
+  .ph-notch::before {
+    content: ""; position: absolute; top: 0; left: calc(var(--notch-r) * -1);
+    width: var(--notch-r); height: var(--notch-r);
+    background: radial-gradient(circle var(--notch-r) at 0 100%, transparent 0 99%, var(--notch-bg) 100%);
+  }
+  .ph-notch::after {
+    content: ""; position: absolute; top: 100%; right: 0;
+    width: var(--notch-r); height: var(--notch-r);
+    background: radial-gradient(circle var(--notch-r) at 0 100%, transparent 0 99%, var(--notch-bg) 100%);
+  }
+
+  .ph-display {
+    position: relative; z-index: 2;
+    padding: clamp(1.5rem, 4vw, 3rem) clamp(1.25rem, 3.5vw, 3rem) clamp(1.5rem, 4vw, 2.75rem);
+    color: #fff; text-transform: uppercase;
+    font-size: clamp(2.4rem, 11vw, 7.5rem); font-weight: 700;
+    line-height: 0.95; letter-spacing: -0.035em;
+    text-shadow: 0 2px 30px rgba(4, 15, 27, 0.45);
+  }
+
+  .ph-scroll {
+    position: absolute; z-index: 4;
+    right: clamp(1rem, 2.5vw, 2.25rem); bottom: clamp(1rem, 2.5vw, 2.25rem);
+    width: clamp(46px, 4.6vw, 62px); aspect-ratio: 1;
+    display: grid; place-items: center; border-radius: 50%;
+    border: 1.5px solid rgba(255, 255, 255, 0.5);
+    color: #fff; text-decoration: none;
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(6px);
+    transition: background 0.24s ease, border-color 0.24s ease, color 0.24s ease, transform 0.24s ease;
+  }
+  .ph-scroll :global(svg) { transform: rotate(90deg); animation: ph-nudge 2.4s ease-in-out infinite; }
+  .ph-scroll:hover { background: #fff; border-color: #fff; color: var(--ink); transform: translateY(2px); }
+  @keyframes ph-nudge {
+    0%, 62%, 100% { transform: rotate(90deg) translateX(0); }
+    35% { transform: rotate(90deg) translateX(4px); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .ph-scroll :global(svg) { animation: none; }
+    .ph-scroll:hover { transform: none; }
+  }
+
+  /* =====================================================================
+     SHOWCASE
+     Portrait in the middle of a dark panel, one card either side. The cards
+     are glass over the panel, so the whole block reads as a single object.
+     ===================================================================== */
+  .profile-section .section-head { margin-bottom: clamp(2rem, 4vw, 3rem); }
+
+  .showcase {
+    position: relative; isolation: isolate; overflow: hidden;
+    border-radius: clamp(22px, 3vw, 40px);
+    background: linear-gradient(150deg, #10395F 0%, var(--ink) 58%, #071A2F 100%);
+    padding: clamp(1.1rem, 2.4vw, 1.9rem);
+    box-shadow: var(--shadow-lg);
+  }
+  /* one soft light behind the portrait so the middle of the panel lifts */
+  .sc-glow {
+    position: absolute; z-index: -1; left: 50%; top: 50%; transform: translate(-50%, -50%);
+    width: min(70%, 620px); aspect-ratio: 1.4;
+    background: radial-gradient(closest-side, rgba(107, 168, 224, 0.3), transparent 100%);
+  }
+  .showcase-grid {
+    display: grid; grid-template-columns: 1fr minmax(240px, 330px) 1fr;
+    gap: clamp(0.75rem, 1.8vw, 1.4rem); align-items: stretch;
+  }
+
+  .sc-portrait {
+    position: relative; overflow: hidden;
+    aspect-ratio: 4 / 5; border-radius: clamp(18px, 2.2vw, 30px);
+    background: var(--ink); box-shadow: 0 24px 50px -18px rgba(4, 15, 27, 0.6);
+  }
+  .sc-photo { width: 100%; height: 100%; object-fit: cover; object-position: 20% 22%; }
+
+  .sc-card {
+    position: relative; overflow: hidden; display: flex; flex-direction: column;
+    border-radius: clamp(18px, 2.2vw, 30px);
+    padding: clamp(1.15rem, 2.2vw, 1.8rem);
+    background: rgba(255, 255, 255, 0.07);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    backdrop-filter: blur(10px);
+  }
+  /* faint plotted grid in the corner, echoing a chart on a screen */
+  .sc-mesh {
+    position: absolute; top: -12%; right: -8%; width: 62%; height: 72%;
+    background:
+      repeating-linear-gradient(90deg, rgba(255,255,255,0.16) 0 1px, transparent 1px 46px),
+      repeating-linear-gradient(0deg, rgba(255,255,255,0.16) 0 1px, transparent 1px 46px);
+    -webkit-mask: linear-gradient(210deg, #000 10%, transparent 78%);
+    mask: linear-gradient(210deg, #000 10%, transparent 78%);
+  }
+  .sc-pill {
+    align-self: flex-start; position: relative;
+    padding: 0.32rem 0.85rem; border-radius: 999px;
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    color: rgba(255, 255, 255, 0.82);
+    font-size: 0.72rem; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase;
+  }
+  .sc-value {
+    margin-top: auto; color: #fff; line-height: 1;
+    font-size: clamp(3rem, 7vw, 5.2rem); font-weight: 700; letter-spacing: -0.045em;
+  }
+  .sc-label { margin-top: 0.6rem; color: #C7DCF0; font-size: 0.95rem; line-height: 1.5; }
+  .sc-label--lead { margin-top: auto; color: #fff; font-size: clamp(1.15rem, 1.8vw, 1.45rem); font-weight: 600; line-height: 1.25; letter-spacing: -0.02em; }
+  .sc-note { margin-top: 0.55rem; color: #A9C3DB; font-size: 0.88rem; line-height: 1.5; }
+
+  /* the icon sits on a soft oval plaque, the one place on this panel that
+     carries colour rather than glass */
+  .sc-plaque {
+    display: grid; place-items: center; align-self: center;
+    width: min(78%, 210px); aspect-ratio: 2 / 1; border-radius: 999px;
+    margin: clamp(0.5rem, 2vw, 1.4rem) 0;
+    color: #fff;
+    background: radial-gradient(120% 140% at 30% 20%, #2E80C6 0%, var(--blue) 45%, #0B3A63 100%);
+    box-shadow: 0 18px 34px -14px rgba(4, 15, 27, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.28);
+  }
+
+  /* ---------- QUALIFICATIONS ---------- */
+  .quals-grid { display: grid; grid-template-columns: 0.72fr 1.28fr; gap: clamp(2rem, 5vw, 3.5rem); align-items: start; }
+  .quals-photo { position: sticky; top: 100px; aspect-ratio: 4 / 5.2; border-radius: var(--radius-lg); overflow: hidden;
+    background: var(--ink); box-shadow: var(--shadow-lg); }
+  .qp-photo { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 18%; }
+  .quals-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; }
+  .qual-item {
+    display: flex; gap: 0.9rem; align-items: flex-start;
+    background: #fff; border: 1px solid var(--blue-line); border-radius: var(--radius);
+    padding: 1.1rem 1.25rem; box-shadow: var(--shadow-sm);
+    transition: border-color 0.22s ease, box-shadow 0.22s ease, transform 0.22s ease;
+  }
+  .qual-item:hover { border-color: #A9C9E6; box-shadow: var(--shadow); transform: translateY(-2px); }
+  .qi-check { flex: none; display: grid; place-items: center; width: 26px; height: 26px; border-radius: 50%; background: var(--blue); color: #fff; margin-top: 2px; }
+  .qual-item strong { display: block; color: var(--ink); font-size: 1.05rem; line-height: 1.35; }
+  .qual-item span { color: var(--slate); font-size: 0.94rem; line-height: 1.55; }
+  /* stacking-cards parallax: each card pins a little lower than the last, so
+     scrolling piles them on top of one another instead of just hovering. */
+  .qual-item--stack {
+    position: sticky;
+    top: calc(120px + var(--i, 0) * 18px);
+    z-index: calc(var(--i, 0) + 1);
+    margin-bottom: 0.9rem;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .qual-item { transition: none; }
+    .qual-item:hover { transform: none; }
+    .qual-item--stack { position: static; }
+  }
+  @media (max-width: 720px) {
+    .qual-item--stack { top: calc(76px + var(--i, 0) * 14px); }
+  }
+
+  /* ---------- TIMELINE ---------- */
+  .path-section { background: #F8FAFC; border-radius: clamp(20px, 3vw, 40px); padding-left: clamp(1.5rem, 5vw, 4rem); padding-right: clamp(1.5rem, 5vw, 4rem); }
+  .path-section h2 { color: var(--ink); }
+  .path-section .section-head p { color: var(--slate); }
+  .path-list-wrap { position: relative; }
+  .path-list { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(4, 1fr); gap: clamp(1rem, 2.5vw, 1.8rem); }
+  .path-step { position: relative; padding-top: 2.1rem; }
+  /* the rail runs through the dots, stopping at the last one */
+  .path-step::before {
+    content: ""; position: absolute; top: 9px; left: 0; right: calc(clamp(1rem, 2.5vw, 1.8rem) * -1); height: 2px;
+    background: var(--blue-line);
+  }
+  .path-step:last-child::before { right: 0; }
+  .ps-dot { position: absolute; top: 0; left: 0; width: 20px; height: 20px; border-radius: 50%;
+    background: var(--artery); box-shadow: 0 0 0 5px rgba(200, 16, 46, 0.18); }
+  .ps-year { display: inline-block; margin-bottom: 0.5rem; color: var(--blue);
+    font-size: 0.76rem; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; }
+  .path-step h3 { color: var(--ink); font-size: 1.2rem; margin-bottom: 0.45rem; }
+  .path-step p { color: var(--slate); font-size: 0.94rem; line-height: 1.6; }
+
+  /* ---------- HOSPITAL ---------- */
+  .hospital-grid { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(2rem, 5vw, 3.5rem); align-items: center; }
+  .hospital-copy h2 { margin: 0.7rem 0 1rem; font-size: var(--step-3); }
+  .hospital-copy p { margin-bottom: 1rem; }
+  .hospital-facts { list-style: none; padding: 0; margin: 1.4rem 0 1.6rem; display: grid; gap: 1rem; }
+  .hospital-facts li { display: flex; gap: 0.9rem; align-items: flex-start; }
+  .hf-icon { flex: none; display: grid; place-items: center; width: 42px; height: 42px; border-radius: 12px; background: rgba(200, 16, 46, 0.1); color: var(--artery); }
+  .hospital-facts strong { display: block; color: var(--ink); }
+  .hospital-facts span { color: var(--slate); font-size: 0.94rem; }
+  .hospital-actions { display: flex; flex-wrap: wrap; gap: 0.7rem; }
+  .hospital-figure { margin: 0; }
+  .hf-photo { width: 100%; border-radius: var(--radius-lg); box-shadow: var(--shadow-lg); }
+  .hospital-figure figcaption { margin-top: 0.9rem; color: var(--slate-soft); font-size: 0.88rem; text-align: center; }
+
+  /* ---------- RESPONSIVE ---------- */
+  @media (max-width: 1080px) {
+    .path-list { grid-template-columns: repeat(2, 1fr); row-gap: 2.4rem; }
+    /* the rail only makes sense along a row, so it stops at the end of each pair */
+    .path-step:nth-child(2n)::before { right: 0; }
+  }
+  @media (max-width: 960px) {
+    .quals-grid, .hospital-grid { grid-template-columns: 1fr; }
+    /* stays positioned, only unsticks: the photo inside is absolute, so going
+       static would hand it to the section and blow it up over the whole block.
+       width:100% is load bearing too: auto inline margins stop the grid item
+       stretching, and fit-content of a box whose only child is absolute is 0,
+       which collapses the whole frame. */
+    .quals-photo { position: relative; top: auto; width: 100%; max-width: 420px; margin-inline: auto; aspect-ratio: 4 / 3.4; }
+    .qp-photo { object-position: 40% 14%; }
+
+    /* portrait moves above the two cards, which then sit side by side */
+    .showcase-grid { grid-template-columns: 1fr 1fr; }
+    .sc-portrait { grid-column: 1 / -1; aspect-ratio: 16 / 11; }
+    .sc-photo { object-position: 50% 24%; }
+    .sc-value { margin-top: 1.2rem; }
+    .sc-label--lead { margin-top: 0; }
+  }
+  @media (max-width: 620px) {
+    .ph-card { --notch-w: clamp(96px, 28vw, 128px); --notch-h: 88px; }
+    .ph-display { padding-bottom: 1.25rem; padding-right: 4.25rem; }
+    .ph-scroll { right: 1rem; bottom: calc(1.25rem - 5px); width: 46px; }
+
+    .showcase-grid { grid-template-columns: 1fr; }
+    .sc-portrait { aspect-ratio: 4 / 4.4; }
+
+    /* stat and icon cards centre their content on narrow screens */
+    .sc-card { align-items: center; text-align: center; }
+    .sc-pill { align-self: center; }
+    .sc-label--lead { margin-top: 0.6rem; }
+
+    /* rail turns to run down the left edge, through the dots, instead of along the top */
+    .path-list { grid-template-columns: 1fr; row-gap: 1.9rem; }
+    .path-step { padding-top: 0; padding-left: 2.4rem; }
+    .path-step::before {
+      top: 9px; left: 9px; right: auto; bottom: calc(clamp(1rem, 2.5vw, 1.8rem) * -1 - 1.9rem);
+      width: 2px; height: auto;
+    }
+    .path-step:last-child::before { display: none; }
+    .ps-dot { top: 0; left: 0; }
+  }
+  /* the nav collapses to a toggle here, so the corner cut has to be wide
+     enough for the call button and the toggle together */
+  @media (min-width: 621px) and (max-width: 940px) {
+    .ph-card { --notch-w: clamp(215px, 32vw, 265px); --notch-h: 88px; }
+  }
+</style>

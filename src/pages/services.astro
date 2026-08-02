@@ -1,0 +1,538 @@
+---
+import { getCollection, getEntry } from 'astro:content';
+import { Image } from 'astro:assets';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Icon from '../components/Icon.astro';
+import BtnArrow from '../components/BtnArrow.astro';
+import { physicianSchema, breadcrumbSchema } from '../lib/schema';
+import heroPhoto from '../assets/top/services.jpg';
+
+const serviceImages = import.meta.glob<{ default: ImageMetadata }>(
+  '../assets/services/*.{jpg,jpeg,png,webp}',
+  { eager: true },
+);
+const serviceImage = (id: string) => {
+  const entry = Object.entries(serviceImages).find(([path]) => path.includes(`/${id}.`));
+  return entry?.[1].default;
+};
+
+const site = (await getEntry('siteSettings', 'settings'))!.data;
+const services = (await getCollection('services')).sort((a, b) => a.data.order - b.data.order);
+
+// Titles in the collection are long and clinical (e.g. "Varicocele Microscopic
+// Surgery (MSV:Microsurgical varicocelectomy)"). The vertical tab rail needs a
+// short, plain-English label instead; the full title still appears on the panel.
+const railLabels: Record<string, string> = {
+  varicocele: 'Varicocele Surgery',
+  'varicose-veins': 'Varicose Veins',
+  'dialysis-access': 'Dialysis Fistula',
+  'peripheral-vascular-diseases': 'Poor Leg Circulation',
+  'thoracic-outlet-syndrome': 'Thoracic Outlet',
+  'ingrown-toenails': 'Ingrown Toenails',
+  cholecystectomy: 'Gallbladder Removal',
+  hemorrhoids: 'Haemorrhoids',
+};
+
+// Plain-English alt text per service photo, keyed the same way.
+const photoAlts: Record<string, string> = {
+  varicocele: 'Varicocele microscopic surgery in Peshawar',
+  'varicose-veins': 'Treatment for varicose veins in the leg',
+  'dialysis-access': 'Dialysis fistula surgery on the arm',
+  'peripheral-vascular-diseases': 'Treatment for poor blood circulation in the leg',
+  'thoracic-outlet-syndrome': 'Treatment for thoracic outlet syndrome near the collarbone',
+  'ingrown-toenails': 'Treatment for an ingrown toenail',
+  cholecystectomy: 'Keyhole gallbladder removal surgery',
+  hemorrhoids: 'Treatment for haemorrhoids, also called piles',
+};
+
+// Fail loudly at build time rather than rendering a broken tab or panel.
+const servicePhotos = services.map((s) => {
+  if (!railLabels[s.id]) {
+    throw new Error(`services.astro: missing rail label for service "${s.id}"`);
+  }
+  if (!photoAlts[s.id]) {
+    throw new Error(`services.astro: missing photo alt text for service "${s.id}"`);
+  }
+  const photo = serviceImage(s.id);
+  if (!photo) {
+    throw new Error(`services.astro: no matching image in src/assets/services/ for service "${s.id}"`);
+  }
+  return photo;
+});
+
+const seoTitle = 'Vascular and General Surgery Treatments in Peshawar | Dr. Sajjad Yousafzai';
+const seoDesc = 'Varicocele microsurgery, varicose veins, dialysis fistula and gallbladder surgery in Peshawar, by consultant surgeon Dr. Sajjad Yousafzai.';
+
+const jsonLd = [
+  physicianSchema(site, { rating: 5, count: 460 }),
+  breadcrumbSchema([
+    { name: 'Home', path: '/' },
+    { name: 'Services', path: '/services' },
+  ]),
+];
+---
+<BaseLayout title={seoTitle} description={seoDesc} path="/services" jsonLd={jsonLd} heroOverlay>
+
+  <!-- ============================ PAGE HERO ============================
+       Same notched photo card as about.astro and contact.astro. -->
+  <section class="page-hero">
+    <div class="container">
+      <div class="ph-card reveal">
+        <Image
+          src={heroPhoto}
+          alt="Dr. Sajjad Yousafzai in the operating theatre in Peshawar"
+          class="ph-photo"
+          widths={[720, 1080, 1440]}
+          sizes="(max-width: 1240px) 100vw, 1160px"
+          loading="eager"
+          fetchpriority="high"
+        />
+        <span class="ph-scrim" aria-hidden="true"></span>
+
+        <span class="ph-notch" aria-hidden="true"></span>
+
+        <p class="ph-display">Services</p>
+
+        <a href="#explore" class="ph-scroll" aria-label="Jump to the list of treatments">
+          <Icon name="arrow" size={22} />
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================ TAB SHOWCASE ============================ -->
+  <section class="section services-section" id="explore">
+    <div class="container">
+      <div class="section-head">
+        <p class="eyebrow reveal">What Dr. Sajjad treats</p>
+        <h1 class="reveal" data-delay="80">Treatments and Procedures</h1>
+        <p class="reveal" data-delay="140">These are the conditions Dr. Sajjad sees most often in clinic. Every plan starts with an examination, and usually an ultrasound scan, so nothing is guessed. Pick a condition below to read what it is and how it is treated.</p>
+      </div>
+
+      <div class="tabs" id="tabs">
+        <div class="tab-rail">
+          <div class="tab-track" role="tablist" aria-orientation="vertical" aria-label="Treatments">
+            {services.map((s, i) => (
+              <button
+                type="button"
+                id={`tab-${s.id}`}
+                class="tab"
+                role="tab"
+                aria-controls={`panel-${s.id}`}
+                aria-selected={i === 0 ? 'true' : 'false'}
+                tabindex={i === 0 ? 0 : -1}
+              >
+                <span class="tab-arrow" aria-hidden="true"><Icon name="arrow" size={20} /></span>
+                <span class="tab-label">{railLabels[s.id]}</span>
+              </button>
+            ))}
+            <span class="tab-bar" aria-hidden="true"></span>
+          </div>
+        </div>
+
+        <div class="tab-stage">
+          {services.map((s, i) => (
+            <div class="tab-panel" id={`panel-${s.id}`} role="tabpanel" aria-labelledby={`tab-${s.id}`} data-active={i === 0 ? '' : undefined}>
+              <div class="tp-frame">
+                <Image
+                  src={servicePhotos[i]}
+                  alt={photoAlts[s.id]}
+                  class="tp-photo"
+                  width={900}
+                  height={810}
+                  loading={i === 0 ? 'eager' : 'lazy'}
+                />
+                <span class="tp-scrim" aria-hidden="true"></span>
+                <div class="tp-glass">
+                  <h3>{s.data.title}</h3>
+                  <p>{s.data.summary}</p>
+                  <a href={`/services/${s.id}`} class="btn btn--light tp-cta">View details<BtnArrow /></a>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <!-- Mobile-only: the tab rail becomes a horizontal scroll strip below
+             860px, which isn't discoverable as "there are more of these" on a
+             touch screen. These Prev/Next controls give an explicit way through
+             the same list, driven by the same activate() the tabs already use. -->
+        <div class="tab-nav">
+          <button type="button" class="tab-nav-btn" id="tab-prev" aria-label="Previous service">
+            <Icon name="arrow" size={18} />
+            Previous
+          </button>
+          <span class="tab-nav-count" id="tab-count" aria-live="polite"></span>
+          <button type="button" class="tab-nav-btn tab-nav-next" id="tab-next" aria-label="Next service">
+            Next
+            <Icon name="arrow" size={18} />
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================ CLOSING CTA ============================ -->
+  <section class="section services-cta-section">
+    <div class="container services-cta">
+      <div class="sc-cta-copy reveal">
+        <h2>Not sure which one fits your symptoms?</h2>
+        <p>If you are not sure which condition matches what you feel, bring your symptoms and any previous scan reports to the clinic. Dr. Sajjad will examine you and explain clearly what is going on.</p>
+        <div class="sc-cta-actions">
+          <a href="/contact" class="btn btn--primary">Book an appointment<BtnArrow /></a>
+          <a href={`tel:${site.phone}`} class="btn btn--ghost"><Icon name="phone" size={18} />{site.phoneDisplay}</a>
+        </div>
+        <p class="disclaimer">This page is for general information only and does not replace an in-person medical examination.</p>
+      </div>
+    </div>
+  </section>
+
+</BaseLayout>
+
+<script>
+  const tabsRoot = document.getElementById('tabs');
+  if (tabsRoot) {
+    const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const tabs = Array.from(tabsRoot.querySelectorAll<HTMLButtonElement>('.tab'));
+    const panels = Array.from(tabsRoot.querySelectorAll<HTMLElement>('.tab-panel'));
+    const bar = tabsRoot.querySelector<HTMLElement>('.tab-bar');
+    const track = tabsRoot.querySelector<HTMLElement>('.tab-track');
+    const narrowQuery = matchMedia('(max-width: 860px)');
+    const prevBtn = document.getElementById('tab-prev') as HTMLButtonElement | null;
+    const nextBtn = document.getElementById('tab-next') as HTMLButtonElement | null;
+    const countEl = document.getElementById('tab-count');
+
+    let activeIndex = Math.max(0, tabs.findIndex((t) => t.getAttribute('aria-selected') === 'true'));
+
+    // Reads the active button's own offset box inside .tab-track. Because that
+    // box is identical whether the track lays out as a vertical grid (desktop)
+    // or a horizontal scroll strip (mobile), this one function drives the bar
+    // in both modes with no branching.
+    const measureBar = () => {
+      const btn = tabs[activeIndex];
+      if (!btn || !bar) return;
+      bar.style.setProperty('--bar-x', `${btn.offsetLeft}px`);
+      bar.style.setProperty('--bar-y', `${btn.offsetTop + btn.offsetHeight - 3}px`);
+      bar.style.setProperty('--bar-w', `${btn.offsetWidth}px`);
+    };
+
+    const activate = (index: number, { focus = false }: { focus?: boolean } = {}) => {
+      activeIndex = (index + tabs.length) % tabs.length;
+      tabs.forEach((t, i) => {
+        const isActive = i === activeIndex;
+        t.setAttribute('aria-selected', String(isActive));
+        t.tabIndex = isActive ? 0 : -1;
+      });
+      panels.forEach((p, i) => {
+        if (i === activeIndex) p.setAttribute('data-active', '');
+        else p.removeAttribute('data-active');
+      });
+      measureBar();
+      if (narrowQuery.matches) {
+        tabs[activeIndex].scrollIntoView({ inline: 'center', block: 'nearest', behavior: reduce ? 'auto' : 'smooth' });
+      }
+      if (focus) tabs[activeIndex].focus();
+      if (countEl) countEl.textContent = `${activeIndex + 1} / ${tabs.length}`;
+      if (prevBtn) prevBtn.disabled = activeIndex === 0;
+      if (nextBtn) nextBtn.disabled = activeIndex === tabs.length - 1;
+    };
+
+    tabs.forEach((btn, i) => {
+      btn.addEventListener('click', () => activate(i));
+    });
+
+    prevBtn?.addEventListener('click', () => activate(activeIndex - 1));
+    nextBtn?.addEventListener('click', () => activate(activeIndex + 1));
+
+    // Automatic-activation tablist keyboard pattern: moving focus also moves
+    // the selection, which is correct here because every panel is already
+    // loaded in the DOM.
+    track?.addEventListener('keydown', (e) => {
+      const key = e.key;
+      if (key === 'ArrowDown' || key === 'ArrowRight') { e.preventDefault(); activate(activeIndex + 1, { focus: true }); }
+      else if (key === 'ArrowUp' || key === 'ArrowLeft') { e.preventDefault(); activate(activeIndex - 1, { focus: true }); }
+      else if (key === 'Home') { e.preventDefault(); activate(0, { focus: true }); }
+      else if (key === 'End') { e.preventDefault(); activate(tabs.length - 1, { focus: true }); }
+    });
+
+    let resizeQueued = false;
+    const onResize = () => {
+      if (resizeQueued) return;
+      resizeQueued = true;
+      requestAnimationFrame(() => { resizeQueued = false; measureBar(); });
+    };
+    addEventListener('resize', onResize, { passive: true });
+
+    measureBar();
+    if (countEl) countEl.textContent = `${activeIndex + 1} / ${tabs.length}`;
+    if (prevBtn) prevBtn.disabled = activeIndex === 0;
+    if (nextBtn) nextBtn.disabled = activeIndex === tabs.length - 1;
+    // Web font swap can change label widths after first paint, so the bar is
+    // re-measured once fonts are actually ready, then faded in via data-ready.
+    const reveal = () => tabsRoot.setAttribute('data-ready', '');
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(() => { measureBar(); reveal(); }).catch(reveal);
+    } else {
+      reveal();
+    }
+  }
+</script>
+
+<style>
+  /* =====================================================================
+     PAGE HERO
+     Identical card to about.astro / contact.astro. See about.astro for the
+     concave-corner notch technique (radial-gradient junction masks).
+     ===================================================================== */
+  .page-hero { padding-top: clamp(0.75rem, 1.5vw, 1.25rem); }
+
+  .ph-card {
+    --card-r: clamp(20px, 2.2vw, 32px);
+    --notch-w: clamp(150px, 20vw, 250px);
+    --notch-h: clamp(72px, 7.5vw, 96px);
+    --notch-r: clamp(14px, 1.6vw, 24px);
+    --notch-bg: var(--paper);
+    --bleed: clamp(0.5rem, 2.5vw, 2.5rem);
+    margin-inline: calc(var(--bleed) * -1);
+    width: calc(100% + var(--bleed) * 2);
+    position: relative; isolation: isolate; overflow: hidden;
+    min-height: clamp(280px, 36vw, 450px);
+    display: flex; align-items: flex-end;
+    border-radius: var(--card-r);
+    background: var(--ink);
+    box-shadow: 0 34px 60px -26px rgba(7, 26, 47, 0.28);
+  }
+  .ph-photo { position: absolute; inset: 0; z-index: -2; width: 100%; height: 100%; object-fit: cover; object-position: 50% 0%; }
+  .ph-scrim {
+    position: absolute; inset: 0; z-index: -1;
+    background:
+      linear-gradient(90deg, rgba(7,26,47,0.82) 0%, rgba(7,26,47,0.5) 40%, rgba(7,26,47,0.2) 70%, rgba(7,26,47,0.3) 100%),
+      linear-gradient(0deg, rgba(7,26,47,0.8) 0%, rgba(7,26,47,0.14) 58%, transparent 100%);
+  }
+  .ph-notch {
+    position: absolute; top: 0; right: 0; z-index: 3;
+    width: var(--notch-w); height: var(--notch-h);
+    background: var(--notch-bg);
+    border-bottom-left-radius: var(--notch-r);
+  }
+  .ph-notch::before {
+    content: ""; position: absolute; top: 0; left: calc(var(--notch-r) * -1);
+    width: var(--notch-r); height: var(--notch-r);
+    background: radial-gradient(circle var(--notch-r) at 0 100%, transparent 0 99%, var(--notch-bg) 100%);
+  }
+  .ph-notch::after {
+    content: ""; position: absolute; top: 100%; right: 0;
+    width: var(--notch-r); height: var(--notch-r);
+    background: radial-gradient(circle var(--notch-r) at 0 100%, transparent 0 99%, var(--notch-bg) 100%);
+  }
+  .ph-display {
+    position: relative; z-index: 2;
+    padding: clamp(1.5rem, 4vw, 3rem) clamp(1.25rem, 3.5vw, 3rem) clamp(1.5rem, 4vw, 2.75rem);
+    color: #fff; text-transform: uppercase;
+    font-size: clamp(2.4rem, 11vw, 7.5rem); font-weight: 700;
+    line-height: 0.95; letter-spacing: -0.035em;
+    text-shadow: 0 2px 30px rgba(4, 15, 27, 0.45);
+  }
+  .ph-scroll {
+    position: absolute; z-index: 4;
+    right: clamp(1rem, 2.5vw, 2.25rem); bottom: clamp(1rem, 2.5vw, 2.25rem);
+    width: clamp(46px, 4.6vw, 62px); aspect-ratio: 1;
+    display: grid; place-items: center; border-radius: 50%;
+    border: 1.5px solid rgba(255, 255, 255, 0.5);
+    color: #fff; text-decoration: none;
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(6px);
+    transition: background 0.24s ease, border-color 0.24s ease, color 0.24s ease, transform 0.24s ease;
+  }
+  .ph-scroll :global(svg) { transform: rotate(90deg); animation: ph-nudge 2.4s ease-in-out infinite; }
+  .ph-scroll:hover { background: #fff; border-color: #fff; color: var(--ink); transform: translateY(2px); }
+  @keyframes ph-nudge {
+    0%, 62%, 100% { transform: rotate(90deg) translateX(0); }
+    35% { transform: rotate(90deg) translateX(4px); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .ph-scroll :global(svg) { animation: none; }
+    .ph-scroll:hover { transform: none; }
+  }
+
+  /* =====================================================================
+     TAB SHOWCASE
+     ===================================================================== */
+  .services-section .section-head { margin-bottom: clamp(2.5rem, 5vw, 4rem); }
+
+  .tabs {
+    display: grid; grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+    gap: clamp(2rem, 5vw, 4rem); align-items: center;
+  }
+
+  .tab-rail { min-width: 0; }
+  /* position:relative is load bearing here: it is the offsetParent the JS
+     measures offsetLeft/offsetTop against to place the moving bar. */
+  .tab-track {
+    position: relative; display: grid; justify-items: start;
+    gap: clamp(0.35rem, 1vw, 0.7rem);
+  }
+  .tab {
+    position: relative; width: auto;
+    display: flex; align-items: center; gap: 0.5rem;
+    background: transparent; border: none; text-align: left;
+    font-family: inherit; font-size: clamp(1.25rem, 2.6vw, 2.15rem); font-weight: 600;
+    letter-spacing: -0.025em; line-height: 1.15;
+    padding: 0.25rem 0 0.5rem; cursor: pointer; text-wrap: balance;
+    color: var(--slate-soft); opacity: 0.42;
+    transition: color 0.3s ease, opacity 0.3s ease;
+  }
+  .tab:hover { color: var(--slate); opacity: 0.72; }
+  .tab[aria-selected="true"] { color: var(--ink); opacity: 1; }
+
+  /* always in the DOM and always occupies its space, so activating a tab
+     never reflows the label text beside it */
+  .tab-arrow {
+    flex: none; width: 20px; display: grid; place-items: center;
+    color: var(--artery);
+    opacity: 0; transform: translateX(-8px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+  }
+  .tab[aria-selected="true"] .tab-arrow { opacity: 1; transform: none; }
+
+  .tab-bar {
+    position: absolute; left: 0; top: 0; pointer-events: none;
+    width: var(--bar-w, 0px); height: 3px; border-radius: 3px;
+    background: var(--artery);
+    transform: translate(var(--bar-x, 0px), var(--bar-y, 0px));
+    transition: transform 0.45s cubic-bezier(0.2, 0.7, 0.3, 1), width 0.45s cubic-bezier(0.2, 0.7, 0.3, 1);
+    opacity: 0; /* until JS has measured it once, so it never flashes at 0,0 */
+  }
+  .tabs[data-ready] .tab-bar { opacity: 1; }
+
+  /* ---------- mobile Prev/Next controls ---------- */
+  .tab-nav { display: none; }
+
+  /* ---------- right column: the panel stage ---------- */
+  .tab-stage { display: grid; position: relative; }
+  /* every panel occupies the same grid cell, so the stage's height is the
+     tallest panel and never jumps when a tab switches */
+  .tab-panel { grid-area: 1 / 1; }
+
+  .tp-frame {
+    position: relative; overflow: hidden;
+    border-radius: clamp(20px, 3vw, 34px);
+    aspect-ratio: 4 / 3.6;
+    background: var(--ink);
+    box-shadow: var(--shadow-lg);
+    opacity: 0; visibility: hidden; pointer-events: none;
+    transform: scale(1.015);
+    /* visibility flips to hidden only after the fade finishes, on the way out */
+    transition: opacity 0.45s ease, transform 0.6s cubic-bezier(0.2,0.7,0.3,1), visibility 0s linear 0.45s;
+  }
+  .tab-panel[data-active] .tp-frame {
+    opacity: 1; visibility: visible; pointer-events: auto; transform: none;
+    transition: opacity 0.45s ease, transform 0.6s cubic-bezier(0.2,0.7,0.3,1), visibility 0s linear 0s;
+  }
+  .tp-photo { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .tp-scrim {
+    position: absolute; inset: 0;
+    background: linear-gradient(0deg, rgba(7,26,47,0.72) 0%, rgba(7,26,47,0.28) 42%, rgba(7,26,47,0.05) 70%, transparent 100%);
+  }
+
+  /* liquid glass card: the ::before sheen plus backdrop-filter is what reads
+     as glass rather than a flat tinted box over arbitrary photography */
+  .tp-glass {
+    position: absolute; z-index: 2; overflow: hidden; isolation: isolate;
+    left: clamp(0.9rem, 2vw, 1.5rem); right: clamp(0.9rem, 2vw, 1.5rem); bottom: clamp(0.9rem, 2vw, 1.5rem);
+    border-radius: clamp(16px, 2.2vw, 24px);
+    padding: clamp(1.05rem, 2.2vw, 1.6rem);
+    background: rgba(255, 255, 255, 0.13);
+    border: 1px solid rgba(255, 255, 255, 0.30);
+    backdrop-filter: blur(18px) saturate(165%);
+    -webkit-backdrop-filter: blur(18px) saturate(165%);
+    box-shadow: 0 22px 50px -22px rgba(4, 15, 27, 0.62),
+                inset 0 1px 0 rgba(255, 255, 255, 0.42);
+    color: #fff;
+  }
+  .tp-glass::before {
+    content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+    background: linear-gradient(140deg, rgba(255,255,255,0.34) 0%, rgba(255,255,255,0.06) 38%, transparent 68%);
+  }
+  @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    .tp-glass { background: rgba(7, 26, 47, 0.78); }
+  }
+  .tp-glass h3 { font-size: clamp(1.05rem, 1.9vw, 1.45rem); color: #fff; letter-spacing: -0.02em; margin-bottom: 0.5rem; }
+  .tp-glass p {
+    color: rgba(255,255,255,0.86); font-size: 0.92rem; line-height: 1.55;
+    display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
+  }
+  .tp-cta { margin-top: 1rem; min-height: 42px; padding: 0.6rem 1.2rem; }
+
+  /* ---------- responsive ---------- */
+  @media (max-width: 980px) {
+    .tabs { grid-template-columns: 1fr; gap: 2rem; }
+  }
+  @media (max-width: 860px) {
+    .tab-rail {
+      overflow-x: auto; overscroll-behavior-x: contain; scrollbar-width: none;
+      margin-inline: calc(var(--gutter) * -1); padding-inline: var(--gutter);
+      /* fade on the trailing edge so the strip visibly reads as scrollable */
+      mask-image: linear-gradient(90deg, #000 88%, transparent 100%);
+      -webkit-mask-image: linear-gradient(90deg, #000 88%, transparent 100%);
+    }
+    .tab-rail::-webkit-scrollbar { display: none; }
+    .tab-track {
+      grid-auto-flow: column; grid-template-columns: none;
+      justify-items: start; gap: 1.25rem; padding-bottom: 0.6rem;
+    }
+    /* the same JS drives the bar here unchanged: it only ever reads the active
+       button's own offsetLeft/offsetTop/offsetWidth inside .tab-track, which is
+       correct whether that track lays out as a column (desktop) or a row (here) */
+    .tab { white-space: nowrap; font-size: clamp(1rem, 4vw, 1.2rem); }
+    .tab-arrow { display: none; }
+
+    .tab-nav {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-top: 1rem;
+    }
+    .tab-nav-btn {
+      display: inline-flex; align-items: center; gap: 0.45rem;
+      padding: 0.65rem 1.1rem; border-radius: 999px;
+      background: var(--blue-soft); box-shadow: inset 0 0 0 1px var(--blue-line);
+      color: var(--ink); font-family: inherit; font-weight: 600; font-size: 0.92rem;
+      border: none; cursor: pointer;
+      transition: background 0.2s ease, opacity 0.2s ease;
+    }
+    .tab-nav-btn:hover:not(:disabled) { background: #fff; }
+    .tab-nav-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    .tab-nav-btn :global(svg) { width: 18px; height: 18px; color: var(--artery); }
+    .tab-nav-btn:first-child :global(svg) { transform: rotate(180deg); }
+    .tab-nav-count { color: var(--slate-soft); font-size: 0.85rem; font-weight: 600; }
+  }
+  @media (max-width: 620px) {
+    .tp-frame { aspect-ratio: 4 / 4.4; }
+    .tp-glass { left: 0.75rem; right: 0.75rem; bottom: 0.75rem; }
+    .tp-glass p { -webkit-line-clamp: 2; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .tab, .tab-arrow, .tab-bar, .tp-frame { transition: none; }
+  }
+
+  /* =====================================================================
+     CLOSING CTA
+     ===================================================================== */
+  .services-cta-section { background: #F8FAFC; border-radius: clamp(20px, 3vw, 40px); }
+  .services-cta { text-align: left; }
+  .sc-cta-copy { max-width: 640px; margin-inline: 0; }
+  .sc-cta-copy h2 { margin-bottom: 0.9rem; }
+  .sc-cta-copy > p:first-of-type { margin-bottom: 1.5rem; }
+  .sc-cta-actions { display: flex; flex-wrap: wrap; justify-content: flex-start; gap: 0.8rem; margin-bottom: 1.6rem; }
+
+  /* =====================================================================
+     RESPONSIVE (hero notch overrides, same breakpoints as about.astro)
+     ===================================================================== */
+  @media (max-width: 620px) {
+    .ph-card { --notch-w: clamp(96px, 28vw, 128px); --notch-h: 88px; }
+    .ph-display { padding-bottom: 1.25rem; padding-right: 4.25rem; }
+    .ph-scroll { right: 1rem; bottom: calc(1.25rem - 5px); width: 46px; }
+  }
+  @media (min-width: 621px) and (max-width: 940px) {
+    .ph-card { --notch-w: clamp(215px, 32vw, 265px); --notch-h: 88px; }
+  }
+</style>

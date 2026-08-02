@@ -1,7 +1,7 @@
 ---
-title: "Microsurgical varicocelectomy"
+title: "Varicocele Microscopic Surgery (MSV:Microsurgical varicocelectomy)"
 medicalTerm: "Varicocele"
-order: 2
+order: 1
 iconKey: "microscope"
 summary: "For varicocele, including cases being investigated for difficulty having children. Done under an operating microscope."
 insideBody: "A varicocele is a group of swollen veins in the scrotum, a little like varicose veins in the leg. The blood does not drain away properly and pools there. This can raise the temperature around the testicle, which is one reason it can affect the making of healthy sperm and cause fertility problems."

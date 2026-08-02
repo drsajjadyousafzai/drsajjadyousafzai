@@ -1,0 +1,387 @@
+---
+import { getCollection, getEntry, render } from 'astro:content';
+import { Image } from 'astro:assets';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Icon from '../../components/Icon.astro';
+import BtnArrow from '../../components/BtnArrow.astro';
+import { physicianSchema, procedureSchema, faqSchema, breadcrumbSchema } from '../../lib/schema';
+
+export async function getStaticPaths() {
+  const services = await getCollection('services');
+  return services.map((entry) => ({ params: { slug: entry.id }, props: { entry } }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+
+const serviceImages = import.meta.glob<{ default: ImageMetadata }>(
+  '../../assets/services/*.{jpg,jpeg,png,webp}',
+  { eager: true },
+);
+const serviceImage = (id: string) => {
+  const found = Object.entries(serviceImages).find(([path]) => path.includes(`/${id}.`));
+  return found?.[1].default;
+};
+
+// Short, plain-English labels for the "other treatments" strip. Kept in sync
+// by hand with the same short labels used on the /services tab rail.
+const railLabels: Record<string, string> = {
+  varicocele: 'Varicocele surgery',
+  'varicose-veins': 'Varicose veins',
+  'dialysis-access': 'Dialysis fistula',
+  'peripheral-vascular-diseases': 'Poor leg circulation',
+  'thoracic-outlet-syndrome': 'Thoracic outlet',
+  'ingrown-toenails': 'Ingrown toenails',
+  cholecystectomy: 'Gallbladder removal',
+  hemorrhoids: 'Haemorrhoids',
+};
+
+const site = (await getEntry('siteSettings', 'settings'))!.data;
+const allServices = (await getCollection('services')).sort((a, b) => a.data.order - b.data.order);
+const otherServices = allServices.filter((s) => s.id !== entry.id);
+
+const photo = serviceImage(entry.id);
+if (!photo) {
+  throw new Error(`services/[slug].astro: no matching photo in src/assets/services/ for service "${entry.id}"`);
+}
+
+const waText = encodeURIComponent(`Assalam o alaikum, I would like to ask about ${entry.data.title}.`);
+const waLink = `https://wa.me/${site.whatsapp}?text=${waText}`;
+
+const seoTitle = entry.data.seoTitle.includes('Dr. Sajjad Yousafzai')
+  ? entry.data.seoTitle
+  : `${entry.data.seoTitle} | Dr. Sajjad Yousafzai`;
+
+const jsonLd = [
+  physicianSchema(site, { rating: 5, count: 460 }),
+  procedureSchema({
+    title: entry.data.title,
+    medicalTerm: entry.data.medicalTerm,
+    summary: entry.data.summary,
+    slug: entry.id,
+  }),
+  faqSchema(entry.data.faqs),
+  breadcrumbSchema([
+    { name: 'Home', path: '/' },
+    { name: 'Services', path: '/services' },
+    { name: entry.data.title, path: `/services/${entry.id}` },
+  ]),
+];
+---
+<BaseLayout title={seoTitle} description={entry.data.seoDescription} path={`/services/${entry.id}`} jsonLd={jsonLd}>
+
+  <!-- ============================ HERO ============================ -->
+  <section class="section detail-hero">
+    <div class="container detail-hero-grid">
+      <div class="detail-hero-copy">
+        <nav class="breadcrumb reveal" aria-label="Breadcrumb">
+          <a href="/">Home</a>
+          <span aria-hidden="true">/</span>
+          <a href="/services">Services</a>
+          <span aria-hidden="true">/</span>
+          <span aria-current="page">{entry.data.title}</span>
+        </nav>
+        <p class="eyebrow reveal" data-delay="60">{entry.data.medicalTerm}</p>
+        <h1 class="reveal" data-delay="100">{entry.data.title}</h1>
+        <p class="lede reveal" data-delay="140">{entry.data.summary}</p>
+        <div class="detail-hero-actions reveal" data-delay="180">
+          <a href="/contact" class="btn btn--primary">Book an appointment<BtnArrow /></a>
+          <a href={`tel:${site.phone}`} class="btn btn--ghost"><Icon name="phone" size={18} />{site.phoneDisplay}</a>
+        </div>
+      </div>
+      <div class="detail-hero-photo reveal" data-delay="100">
+        <Image
+          src={photo}
+          alt={entry.data.title}
+          class="dhp-img"
+          width={720}
+          height={648}
+          loading="eager"
+          fetchpriority="high"
+        />
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== WHAT IS HAPPENING ==================== -->
+  <section class="section">
+    <div class="container">
+      <div class="detail-narrow">
+        <h2 class="reveal">What is happening inside your body</h2>
+        <p class="lede reveal" data-delay="60">{entry.data.insideBody}</p>
+        <div class="prose reveal" data-delay="100">
+          <Content />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== SIGNS ==================== -->
+  <section class="section signs-section">
+    <div class="container">
+      <div class="section-head">
+        <h2 class="reveal">Signs to look out for</h2>
+      </div>
+      <ul class="signs-grid">
+        {entry.data.signs.map((sign, i) => (
+          <li class="sign-card reveal" data-delay={String((i % 3) * 70)}>
+            <span class="sign-check" aria-hidden="true"><Icon name="check" size={15} /></span>
+            <span>{sign}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <!-- ==================== TREATMENT ==================== -->
+  <section class="section">
+    <div class="container">
+      {entry.data.treatmentOptions && entry.data.treatmentOptions.length > 0 ? (
+        <>
+          <div class="section-head">
+            <h2 class="reveal">Your treatment choices</h2>
+          </div>
+          <div class="options-grid">
+            {entry.data.treatmentOptions.map((t, i) => {
+              const optPhoto = t.photoId ? serviceImage(t.photoId) : undefined;
+              return (
+                <article class="option-card reveal" data-delay={String((i % 3) * 80)}>
+                  <div class="option-media">
+                    {optPhoto ? (
+                      <Image src={optPhoto} alt={t.title} class="option-photo" width={480} height={320} loading="lazy" />
+                    ) : (
+                      <span class="option-icon" aria-hidden="true"><Icon name={t.iconKey} size={28} /></span>
+                    )}
+                  </div>
+                  <span class="option-badge" aria-hidden="true"><Icon name={t.iconKey} size={18} /></span>
+                  <h3>{t.title}</h3>
+                  <p>{t.body}</p>
+                </article>
+              );
+            })}
+          </div>
+        </>
+      ) : (
+        <div class="detail-narrow">
+          <h2 class="reveal">How it is treated</h2>
+          <p class="reveal" data-delay="60">{entry.data.treatment}</p>
+        </div>
+      )}
+    </div>
+  </section>
+
+  <!-- ==================== RECOVERY ==================== -->
+  <section class="section recovery-section">
+    <div class="container">
+      <div class="section-head">
+        <h2 class="reveal">What recovery looks like</h2>
+      </div>
+      <ol class="recovery-list">
+        {entry.data.recovery.map((step, i) => (
+          <li class="recovery-step reveal" data-delay={String((i % 4) * 70)}>
+            <span class="rs-dot" aria-hidden="true">{i + 1}</span>
+            <p>{step}</p>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
+
+  <!-- ==================== FAQS ==================== -->
+  <section class="section faqs-section">
+    <div class="container">
+      <div class="detail-narrow">
+        <h2 class="reveal">Common questions</h2>
+        <div class="faq-accordion reveal" data-delay="80">
+          {entry.data.faqs.map((f) => (
+            <details class="faq-row">
+              <summary>
+                <span>{f.question}</span>
+                <span class="faq-chevron" aria-hidden="true"><Icon name="arrow" size={16} /></span>
+              </summary>
+              <div class="faq-row-answer"><p>{f.answer}</p></div>
+            </details>
+          ))}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== CLOSING ==================== -->
+  <section class="section closing-section">
+    <div class="container closing-inner">
+      <p class="disclaimer reveal">This page is for general information only and does not replace a proper medical examination.</p>
+      <div class="closing-cta reveal" data-delay="60">
+        <h2>Ready to talk to Dr. Sajjad about this?</h2>
+        <div class="closing-actions">
+          <a href="/contact" class="btn btn--primary">Book an appointment<BtnArrow /></a>
+          <a href={`tel:${site.phone}`} class="btn btn--ghost"><Icon name="phone" size={18} />{site.phoneDisplay}</a>
+          <a href={waLink} class="btn btn--whatsapp" rel="noopener"><Icon name="whatsapp" size={18} />WhatsApp</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== OTHER TREATMENTS ==================== -->
+  <section class="section other-section">
+    <div class="container">
+      <div class="section-head">
+        <h2 class="reveal">Other treatments</h2>
+      </div>
+      <ul class="other-grid">
+        {otherServices.map((s, i) => (
+          <li class="reveal" data-delay={String((i % 4) * 60)}>
+            <a href={`/services/${s.id}`} class="other-card">
+              <span class="other-icon" aria-hidden="true"><Icon name={s.data.iconKey} size={22} /></span>
+              <span class="other-label">{railLabels[s.id] ?? s.data.title}</span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+</BaseLayout>
+
+<style>
+  /* =====================================================================
+     HERO
+     Two column, photo right. Stacks photo-first under 900px so the reader
+     sees the condition before the wall of text.
+     ===================================================================== */
+  .detail-hero { padding-top: clamp(2rem, 5vw, 3.5rem); }
+  .detail-hero-grid { display: grid; grid-template-columns: 1.05fr 0.95fr; gap: clamp(2rem, 5vw, 4rem); align-items: center; }
+  .breadcrumb { display: flex; flex-wrap: wrap; gap: 0.4rem; align-items: center; font-size: 0.86rem; color: var(--slate-soft); margin-bottom: 1rem; }
+  .breadcrumb a { color: var(--slate-soft); text-decoration: none; }
+  .breadcrumb a:hover { color: var(--blue); text-decoration: underline; }
+  .breadcrumb [aria-current] { color: var(--slate); font-weight: 500; }
+  .detail-hero-copy h1 { font-size: var(--step-3); margin: 0.6rem 0 1rem; }
+  .detail-hero-actions { display: flex; flex-wrap: wrap; gap: 0.7rem; margin-top: 1.6rem; }
+  .detail-hero-photo {
+    position: relative; aspect-ratio: 4 / 3.6; border-radius: var(--radius-lg);
+    overflow: hidden; background: var(--ink); box-shadow: var(--shadow-lg);
+  }
+  .dhp-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+
+  /* =====================================================================
+     SHARED NARROW MEASURE + PROSE
+     ===================================================================== */
+  /* the reading column is capped for line length, but it must sit inside a
+     normal .container rather than being one: .container centres itself, so
+     capping it directly would centre this text while every other section on
+     the page stays aligned to the container's left edge. */
+  .detail-narrow { max-width: 54rem; }
+  .prose :global(p) { margin-top: 1rem; color: var(--slate); }
+  .prose :global(p:first-child) { margin-top: 1.4rem; }
+
+  /* =====================================================================
+     SIGNS
+     ===================================================================== */
+  .signs-grid { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+  .sign-card {
+    display: flex; gap: 0.8rem; align-items: flex-start;
+    background: #fff; border: 1px solid var(--blue-line); border-radius: var(--radius);
+    padding: 1.05rem 1.2rem; box-shadow: var(--shadow-sm); color: var(--slate); font-size: 0.96rem; line-height: 1.5;
+  }
+  .sign-check { flex: none; display: grid; place-items: center; width: 26px; height: 26px; border-radius: 50%; background: var(--blue); color: #fff; margin-top: 1px; }
+
+  /* =====================================================================
+     TREATMENT OPTIONS
+     ===================================================================== */
+  .options-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.3rem; }
+  .option-card {
+    position: relative; background: #fff; border: 1px solid var(--blue-line); border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm); overflow: hidden; padding-bottom: 1.4rem;
+  }
+  .option-media { position: relative; aspect-ratio: 3 / 2; background: var(--blue-soft); overflow: hidden; }
+  .option-photo { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .option-icon { position: absolute; inset: 0; display: grid; place-items: center; color: var(--blue); }
+  .option-badge {
+    position: absolute; top: calc(2/3 * 100% - 20px); right: 1.1rem;
+    width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center;
+    background: var(--ink); color: #fff; box-shadow: var(--shadow-sm);
+  }
+  .option-card h3 { font-size: 1.1rem; margin: 1rem 1.2rem 0.5rem; }
+  .option-card p { font-size: 0.94rem; color: var(--slate); margin: 0 1.2rem; }
+
+  /* =====================================================================
+     RECOVERY TIMELINE
+     Scoped copy of about.astro's .path-list idiom: a dot on a rail, one
+     step per line, going vertical under 620px.
+     ===================================================================== */
+  .recovery-list { list-style: none; padding: 0; margin: 0; display: grid; gap: 0; max-width: 46rem; }
+  .recovery-step { position: relative; padding: 0 0 1.8rem 2.6rem; }
+  .recovery-step::before {
+    content: ""; position: absolute; top: 26px; left: 12px; bottom: 0; width: 2px; background: var(--blue-line);
+  }
+  .recovery-step:last-child::before { display: none; }
+  .recovery-step:last-child { padding-bottom: 0; }
+  .rs-dot {
+    position: absolute; top: 0; left: 0; width: 26px; height: 26px; border-radius: 50%;
+    display: grid; place-items: center; background: var(--artery); color: #fff;
+    font-size: 0.82rem; font-weight: 700; box-shadow: 0 0 0 5px rgba(200, 16, 46, 0.14);
+  }
+  .recovery-step p { color: var(--slate); }
+
+  /* =====================================================================
+     FAQ ACCORDION
+     ===================================================================== */
+  .faq-accordion { display: grid; gap: 0.7rem; margin-top: 1.4rem; }
+  .faq-row {
+    background: #fff; border: 1px solid var(--blue-line); border-radius: var(--radius);
+    box-shadow: var(--shadow-sm); overflow: hidden;
+  }
+  .faq-row summary {
+    list-style: none; cursor: pointer; display: flex; align-items: center; justify-content: space-between;
+    gap: 1rem; padding: 1.1rem 1.3rem; font-weight: 600; color: var(--ink);
+  }
+  .faq-row summary::-webkit-details-marker { display: none; }
+  .faq-row summary:focus-visible { outline: 2.5px solid var(--blue); outline-offset: -3px; border-radius: var(--radius-sm); }
+  /* arrow icon points right by default; rotated 90deg to point down when
+     closed, and to point up (-90deg) once the row is open */
+  .faq-chevron { flex: none; display: grid; place-items: center; color: var(--blue); transform: rotate(90deg); transition: transform 0.25s ease; }
+  .faq-row[open] .faq-chevron { transform: rotate(-90deg); }
+  .faq-row-answer { padding: 0 1.3rem 1.2rem; }
+  .faq-row-answer p { color: var(--slate); }
+  @media (prefers-reduced-motion: reduce) { .faq-chevron { transition: none; } }
+
+  /* =====================================================================
+     CLOSING
+     ===================================================================== */
+  .closing-section { background: #F8FAFC; border-radius: clamp(20px, 3vw, 40px); }
+  .closing-cta { max-width: 46rem; text-align: left; }
+  .closing-cta h2 { margin-top: 1.2rem; margin-bottom: 1.2rem; font-size: var(--step-2); }
+  .closing-actions { display: flex; flex-wrap: wrap; justify-content: flex-start; gap: 0.8rem; }
+
+  /* =====================================================================
+     OTHER TREATMENTS
+     ===================================================================== */
+  .other-grid { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.9rem; }
+  .other-card {
+    display: flex; align-items: center; gap: 0.7rem;
+    background: #fff; border: 1px solid var(--blue-line); border-radius: var(--radius);
+    padding: 0.9rem 1.1rem; text-decoration: none; color: var(--ink); font-weight: 600; font-size: 0.94rem;
+    box-shadow: var(--shadow-sm);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+  }
+  .other-card:hover { border-color: #A9C9E6; box-shadow: var(--shadow-sm); transform: translateY(-2px); }
+  .other-icon { flex: none; display: grid; place-items: center; width: 34px; height: 34px; border-radius: 50%; background: var(--blue-soft); color: var(--blue); }
+  @media (prefers-reduced-motion: reduce) { .other-card:hover { transform: none; } }
+
+  /* =====================================================================
+     RESPONSIVE
+     ===================================================================== */
+  @media (max-width: 900px) {
+    .detail-hero-grid { grid-template-columns: 1fr; }
+    .detail-hero-photo { order: -1; }
+    .options-grid { grid-template-columns: 1fr 1fr; }
+    .other-grid { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 700px) {
+    .signs-grid { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 560px) {
+    .options-grid { grid-template-columns: 1fr; }
+    .other-grid { grid-template-columns: 1fr; }
+  }
+</style>

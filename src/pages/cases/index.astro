@@ -1,9 +1,10 @@
 ---
 import { getCollection, getEntry } from 'astro:content';
+import { Image } from 'astro:assets';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Icon from '../../components/Icon.astro';
-import BtnArrow from '../../components/BtnArrow.astro';
 import PatientStoryCard from '../../components/PatientStoryCard.astro';
+import heroPhoto from '../../assets/top/patient-stories.jpg';
 
 const site = (await getEntry('siteSettings', 'settings'))!.data;
 const videoStories = (await getCollection('patientStories'))
@@ -14,16 +15,34 @@ const waText = encodeURIComponent('Assalam o alaikum, I would like to book an ap
 const waLink = `https://wa.me/${site.whatsapp}?text=${waText}`;
 
 const seoTitle = 'Patient Stories | Dr. Sajjad Yousafzai, Vascular Surgeon Peshawar';
-const seoDesc = 'Watch real patients of Dr. Sajjad Yousafzai talk about their treatment and recovery, in their own words.';
+const seoDesc = 'Watch real patients of Dr. Sajjad Yousafzai as he talks about their treatment and recovery, in their own words.';
 ---
-<BaseLayout title={seoTitle} description={seoDesc} path="/cases">
+<BaseLayout title={seoTitle} description={seoDesc} path="/cases" heroOverlay>
 
-  <!-- ==================== PAGE INTRO ==================== -->
-  <section class="section--tight page-intro">
+  <!-- ============================ PAGE HERO ============================ -->
+  <section class="page-hero">
     <div class="container">
-      <div class="section-head section-head--center">
-        <h1 class="reveal" data-delay="80">Patient stories</h1>
-        <p class="reveal" data-delay="140">Real patients of Dr. Sajjad Yousafzai talk about what brought them in, their treatment and their recovery, in their own words.</p>
+      <div class="ph-card reveal">
+        <Image
+          src={heroPhoto}
+          alt="Patient Smiling after treatment"
+          class="ph-photo"
+          widths={[720, 1080, 1440]}
+          sizes="(max-width: 1240px) 100vw, 1160px"
+          loading="eager"
+          fetchpriority="high"
+        />
+        <span class="ph-scrim" aria-hidden="true"></span>
+
+        <!-- the step cut out of the top-right corner, plus the two rounded
+             junctions where that cut meets the card edges -->
+        <span class="ph-notch" aria-hidden="true"></span>
+
+        <h1 class="ph-display">Patient Stories</h1>
+
+        <a href="#stories-grid" class="ph-scroll" aria-label="Jump to patient videos">
+          <Icon name="arrow" size={22} />
+        </a>
       </div>
     </div>
   </section>
@@ -31,6 +50,10 @@ const seoDesc = 'Watch real patients of Dr. Sajjad Yousafzai talk about their tr
   <!-- ==================== VIDEO GRID ==================== -->
   <section class="section stories-page-section" id="stories-grid">
     <div class="container">
+      <div class="section-head section-head--center">
+        <h2 class="reveal" data-delay="80">In Surgeon's Own Words</h2>
+        <p class="lede reveal" data-delay="140">Real patients: what brought them in, their treatment and their recovery.</p>
+      </div>
       <div class="stories-page-grid">
         {videoStories.map((v, i) => (
           <div class="reveal" data-delay={String((i % 3) * 90)}>
@@ -41,17 +64,35 @@ const seoDesc = 'Watch real patients of Dr. Sajjad Yousafzai talk about their tr
     </div>
   </section>
 
-  <!-- ==================== FINAL CTA ==================== -->
-  <section class="section final-cta-section">
-    <div class="container">
-      <div class="final-cta reveal">
-        <div class="fc-copy">
-          <h2>Your legs, and your peace of mind, are worth a proper look</h2>
-          <p>Book an appointment, or call now and speak to the clinic. If you are travelling from outside Peshawar, ask about an evening online video consultation. Fees are always discussed openly, with no hidden charges.</p>
+  <!-- ============================ LOCATION ============================ -->
+  <section class="section location-section">
+    <div class="container location-grid">
+      <div class="location-copy">
+        <h2 class="reveal" data-delay="80">Clinic in Khyber Bazar, Peshawar</h2>
+        <ul class="location-facts reveal" data-delay="140">
+          <li><span class="lf-icon" aria-hidden="true"><Icon name="map" size={20} /></span>
+            <div><strong>{site.addressLine}</strong><span>{site.addressLocality}, {site.addressRegion}. {site.landmark}</span></div></li>
+          <li><span class="lf-icon" aria-hidden="true"><Icon name="clock" size={20} /></span>
+            <div><strong>Clinic hours</strong><span>{site.clinicHours}</span></div></li>
+          <li><span class="lf-icon" aria-hidden="true"><Icon name="stethoscope" size={20} /></span>
+            <div><strong>Online video consultation</strong><span>{site.onlineHours}</span></div></li>
+          <li><span class="lf-icon" aria-hidden="true"><Icon name="phone" size={20} /></span>
+            <div><strong>Phone</strong><span><a href={`tel:${site.phone}`}>{site.phoneDisplay}</a></span></div></li>
+        </ul>
+        <div class="location-actions reveal" data-delay="200">
+          <a href={site.mapDirections} class="btn btn--ghost" rel="noopener"><Icon name="map" size={18} />Get directions</a>
+          <a href={waLink} class="btn btn--whatsapp" rel="noopener"><Icon name="whatsapp" size={18} />Message on WhatsApp</a>
         </div>
-        <div class="fc-actions">
-          <a href="/contact" class="btn btn--primary btn--pulse btn--wide">Book an Appointment<BtnArrow /></a>
-          <a href={waLink} class="btn btn--ghost btn--ghost-light btn--wide" rel="noopener"><Icon name="whatsapp" size={18} />WhatsApp us</a>
+      </div>
+      <div class="location-map reveal" data-delay="120">
+        <div class="map-frame">
+          <iframe
+            class="map-embed"
+            src={site.mapEmbed}
+            title="Map of the clinic in Khyber Bazar"
+            loading="lazy"
+            referrerpolicy="no-referrer-when-downgrade"
+          ></iframe>
         </div>
       </div>
     </div>
@@ -60,30 +101,142 @@ const seoDesc = 'Watch real patients of Dr. Sajjad Yousafzai talk about their tr
 </BaseLayout>
 
 <style>
-  .page-intro { background: var(--blue-soft); }
+  /* =====================================================================
+     PAGE HERO
+     A wide photo card with a step cut out of the top-right corner. The cut
+     is a paper-coloured block; the two places where it meets the card edge
+     are rounded with radial-gradient masks, because CSS has no concave
+     border-radius. Geometry is driven by the three --notch-* variables.
+     ===================================================================== */
+  /* the card slides up under the floating header, so the logo and the nav pill
+     sit on the photo; the corner cut is sized to hold the call button */
+  .page-hero { padding-top: clamp(0.75rem, 1.5vw, 1.25rem); }
+
+  .ph-card {
+    --card-r: clamp(20px, 2.2vw, 32px);
+    --notch-w: clamp(150px, 20vw, 250px);
+    --notch-h: clamp(72px, 7.5vw, 96px);
+    --notch-r: clamp(14px, 1.6vw, 24px);
+    /* must be the exact page base, or the cut reads as a pasted-on block */
+    --notch-bg: var(--paper);
+    /* reaches past the container edges without ever leaving the viewport,
+       since --bleed never exceeds --gutter */
+    --bleed: clamp(0.5rem, 2.5vw, 2.5rem);
+    margin-inline: calc(var(--bleed) * -1);
+    width: calc(100% + var(--bleed) * 2);
+    position: relative; isolation: isolate; overflow: hidden;
+    min-height: clamp(280px, 36vw, 450px);
+    display: flex; align-items: flex-end;
+    border-radius: var(--card-r);
+    background: var(--ink);
+    /* pulled in with a negative spread so the halo stays under the card: the
+       shared shadow would tint the page around the corner cut and outline it */
+    box-shadow: 0 34px 60px -26px rgba(7, 26, 47, 0.28);
+  }
+  /* the portrait is taller than this band, so only the vertical crop is a real
+     choice: sitting low keeps his hands and face in frame */
+  .ph-photo { position: absolute; inset: 0; z-index: -2; width: 100%; height: 100%; object-fit: cover; object-position: 50% 22%; }
+  .ph-scrim {
+    position: absolute; inset: 0; z-index: -1;
+    background:
+      linear-gradient(90deg, rgba(7,26,47,0.88) 0%, rgba(7,26,47,0.62) 42%, rgba(7,26,47,0.28) 72%, rgba(7,26,47,0.34) 100%),
+      linear-gradient(0deg, rgba(7,26,47,0.72) 0%, rgba(7,26,47,0.1) 55%, transparent 100%);
+  }
+
+  .ph-notch {
+    position: absolute; top: 0; right: 0; z-index: 3;
+    width: var(--notch-w); height: var(--notch-h);
+    background: var(--notch-bg);
+    border-bottom-left-radius: var(--notch-r);
+  }
+  /* rounds the card's top edge as it steps down into the cut */
+  .ph-notch::before {
+    content: ""; position: absolute; top: 0; left: calc(var(--notch-r) * -1);
+    width: var(--notch-r); height: var(--notch-r);
+    background: radial-gradient(circle var(--notch-r) at 0 100%, transparent 0 99%, var(--notch-bg) 100%);
+  }
+  /* rounds the corner where the cut hands back over to the card's right edge */
+  .ph-notch::after {
+    content: ""; position: absolute; top: 100%; right: 0;
+    width: var(--notch-r); height: var(--notch-r);
+    background: radial-gradient(circle var(--notch-r) at 0 100%, transparent 0 99%, var(--notch-bg) 100%);
+  }
+
+  .ph-display {
+    position: relative; z-index: 2; margin: 0;
+    padding: clamp(1.5rem, 4vw, 3rem) clamp(1.25rem, 3.5vw, 3rem) clamp(1.5rem, 4vw, 2.75rem);
+    color: #fff; text-transform: uppercase;
+    font-size: clamp(2.4rem, 11vw, 7.5rem); font-weight: 700;
+    line-height: 0.95; letter-spacing: -0.035em;
+    text-shadow: 0 2px 30px rgba(4, 15, 27, 0.45);
+  }
+
+  .ph-scroll {
+    position: absolute; z-index: 4;
+    right: clamp(1rem, 2.5vw, 2.25rem); bottom: clamp(1rem, 2.5vw, 2.25rem);
+    width: clamp(46px, 4.6vw, 62px); aspect-ratio: 1;
+    display: grid; place-items: center; border-radius: 50%;
+    border: 1.5px solid rgba(255, 255, 255, 0.5);
+    color: #fff; text-decoration: none;
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(6px);
+    transition: background 0.24s ease, border-color 0.24s ease, color 0.24s ease, transform 0.24s ease;
+  }
+  .ph-scroll :global(svg) { transform: rotate(90deg); animation: ph-nudge 2.4s ease-in-out infinite; }
+  .ph-scroll:hover { background: #fff; border-color: #fff; color: var(--ink); transform: translateY(2px); }
+  @keyframes ph-nudge {
+    0%, 62%, 100% { transform: rotate(90deg) translateX(0); }
+    35% { transform: rotate(90deg) translateX(4px); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .ph-scroll :global(svg) { animation: none; }
+    .ph-scroll:hover { transform: none; }
+  }
+
+  /* the nav collapses to a toggle here, so the right-hand cluster is the call
+     button plus the toggle and the cut has to be wide enough for both */
+  @media (max-width: 940px) {
+    .ph-card { --notch-w: clamp(215px, 32vw, 265px); --notch-h: 88px; }
+  }
+  @media (max-width: 620px) {
+    /* only the toggle is left on a phone: any wider and the cut starts eating
+       into the logo and the doctor's name */
+    .ph-card { --notch-w: clamp(96px, 28vw, 128px); --notch-h: 88px; }
+    /* the arrow sits on the same line as the title instead of below it, so the
+       two share a centre line: the title's line box is shorter than the 46px
+       button, hence the small offset */
+    .ph-display { padding-bottom: 1.25rem; padding-right: 4.25rem; }
+    .ph-scroll { right: 1rem; bottom: calc(1.25rem - 5px); width: 46px; }
+  }
 
   .stories-page-grid {
     display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.4rem;
     max-width: 1000px; margin-inline: auto;
   }
 
-  /* ---------- FINAL CTA (matches homepage) ---------- */
-  .final-cta { background: linear-gradient(150deg, var(--blue) 0%, var(--ink) 100%); border-radius: var(--radius-lg); padding: clamp(2rem, 5vw, 3.5rem);
-    display: grid; grid-template-columns: 1.3fr 0.7fr; gap: clamp(1.5rem, 4vw, 3rem); align-items: center; box-shadow: var(--shadow-lg); position: relative; overflow: hidden; }
-  .fc-copy h2 { color: #fff; margin: 0.6rem 0 1rem; }
-  .fc-copy p { color: #C7D6E6; }
-  .fc-actions { display: grid; gap: 0.7rem; }
-  .btn--ghost-light { border-color: rgba(255,255,255,0.3); color: #fff; }
-  .btn--ghost-light:hover { border-color: #fff; color: #fff; background: rgba(255,255,255,0.08); }
-  .btn--ghost-light::before { background: linear-gradient(100deg, transparent 22%, rgba(255,255,255,0.22) 46%, transparent 68%); }
-  .btn--ghost-light :global(.btn-arrow) { background: rgba(255,255,255,0.18); }
-  .btn--ghost-light:hover :global(.btn-arrow) { background: rgba(255,255,255,0.28); }
-
   @media (max-width: 960px) {
-    .final-cta { grid-template-columns: 1fr; }
     .stories-page-grid { grid-template-columns: repeat(2, 1fr); max-width: 620px; }
   }
   @media (max-width: 620px) {
     .stories-page-grid { grid-template-columns: 1fr; max-width: 340px; }
+  }
+
+  /* ---------- LOCATION (matches the homepage block) ---------- */
+  .location-section { background: #F8FAFC; }
+  .location-grid { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(2rem, 5vw, 3.5rem); align-items: center; }
+  .location-copy h2 { margin: 0.7rem 0 1.4rem; }
+  .location-facts { list-style: none; padding: 0; margin: 0 0 1.6rem; display: grid; gap: 1.1rem; }
+  .location-facts li { display: flex; gap: 0.9rem; align-items: flex-start; }
+  .lf-icon { flex: none; display: grid; place-items: center; width: 44px; height: 44px; border-radius: 12px; background: rgba(200, 16, 46, 0.1); color: var(--artery); }
+  .location-facts strong { display: block; color: var(--ink); }
+  .location-facts span { color: var(--slate); font-size: 0.95rem; }
+  .location-facts a { color: var(--blue); text-decoration: none; }
+  .location-actions { display: flex; flex-wrap: wrap; gap: 0.7rem; }
+  .map-frame { aspect-ratio: 5/4; border-radius: var(--radius-lg); overflow: hidden;
+    border: 1px solid var(--blue-line); box-shadow: var(--shadow-lg); background: #EBF1F8; }
+  .map-embed { display: block; width: 100%; height: 100%; border: 0; }
+
+  @media (max-width: 960px) {
+    .location-grid { grid-template-columns: 1fr; }
   }
 </style>
