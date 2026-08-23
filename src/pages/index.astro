@@ -236,7 +236,7 @@ const jsonLd = [
             <span class="story-quote-icon" aria-hidden="true"><Icon name="quote" size={26} /></span>
             <blockquote>{t.quote}</blockquote>
             <figcaption>
-              <div class="story-stars" aria-label={`${t.rating} out of 5 stars`}>
+              <div class="story-stars" role="img" aria-label={`${t.rating} out of 5 stars`}>
                 {Array.from({ length: t.rating }).map(() => <Icon name="star" size={15} />)}
               </div>
               <strong>{t.name}</strong>
@@ -476,7 +476,7 @@ const jsonLd = [
     transition: box-shadow 0.3s ease;
     will-change: transform;
   }
-  .vs-num { font-size: 2.4rem; font-weight: 800; color: rgba(159,195,230,0.35); line-height: 1; display: block; margin-bottom: 0.6rem; }
+  .vs-num { font-size: 2.4rem; font-weight: 800; color: rgba(159,195,230,0.5); line-height: 1; display: block; margin-bottom: 0.6rem; }
   .visit-step h3 { color: #fff; font-size: 1.35rem; margin-bottom: 0.5rem; }
   .visit-step p { color: #B9CBDD; font-size: var(--step-0); max-width: 54ch; }
   @media (prefers-reduced-motion: reduce) {
