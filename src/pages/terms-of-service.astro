@@ -1,0 +1,111 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  title="Terms of Service | Dr. Sajjad Yousafzai"
+  description="Read the terms of service for drsajjadyousafzai.com, including website use, appointment requests, and medical information disclaimers."
+  path="/terms-of-service"
+>
+  <section class="section legal-section">
+    <div class="container legal-shell">
+      <header class="section-head section-head--center reveal">
+        <p class="eyebrow">Legal information</p>
+        <h1>Terms of Service</h1>
+        <p>Last updated: August 2026</p>
+      </header>
+
+      <div class="legal-card reveal" data-delay="80">
+        <p>
+          By using this website, you agree to these terms and conditions. This website is intended to provide general
+          information about Dr. Sajjad Yousafzai, clinic services, contact details, and appointment arrangements.
+        </p>
+
+        <h2>General information only</h2>
+        <p>
+          The content on this website is for informational purposes only and does not constitute medical advice,
+          diagnosis, or treatment. It is not a substitute for a proper clinical examination or professional judgement.
+          Patients must seek direct medical attention when needed and should not delay urgent care.
+        </p>
+
+        <h2>Appointments and enquiries</h2>
+        <p>
+          Appointment requests submitted via the website or WhatsApp are not a guarantee of treatment or clinical review.
+          The clinic may contact you to confirm availability, eligibility, or relevant details. Final treatment decisions
+          remain the responsibility of the attending medical team.
+        </p>
+
+        <h2>Website usage</h2>
+        <p>
+          You agree to use this site responsibly and not to misuse contact forms, impersonate others, or send abusive,
+          inappropriate, or unlawful content. We reserve the right to restrict or refuse access where necessary.
+        </p>
+
+        <h2>Accuracy and availability</h2>
+        <p>
+          While every effort is made to keep information current and accurate, the clinic does not guarantee that the
+          website is complete, error-free, or continuously available. Service details, timings, locations, and fees may
+          change with notice.
+        </p>
+
+        <h2>Intellectual property</h2>
+        <p>
+          Content on this website, including text, images, branding, and design elements, is protected by copyright and
+          may not be reproduced without permission except for personal or informational use.
+        </p>
+
+        <h2>Limitation of liability</h2>
+        <p>
+          The clinic and website operators do not accept responsibility for indirect, incidental, or consequential losses
+          arising from the use of this website or reliance on any information provided here, except where required by law.
+        </p>
+
+        <h2>Privacy</h2>
+        <p>
+          The handling of personal information is governed by the website privacy policy. By using the site, you agree
+          to the terms of that policy as it applies to enquiries and appointment arrangements.
+        </p>
+
+        <h2>Changes to these terms</h2>
+        <p>
+          These terms may be updated from time to time. Continued use of the website after changes are published means
+          you accept the revised terms.
+        </p>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .legal-section {
+    padding-top: clamp(4rem, 8vw, 6rem);
+  }
+
+  .legal-shell {
+    max-width: 860px;
+    margin-inline: auto;
+  }
+
+  .legal-card {
+    background: rgba(255, 255, 255, 0.7);
+    border: 1px solid var(--blue-line);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    padding: clamp(1.5rem, 3vw, 2.5rem);
+  }
+
+  .legal-card > * + * {
+    margin-top: 1rem;
+  }
+
+  .legal-card h2 {
+    font-size: clamp(1.4rem, 1.8vw, 2rem);
+    margin-top: 2rem;
+  }
+
+  .legal-card p,
+  .legal-card li {
+    color: var(--slate);
+    font-size: var(--step-0);
+  }
+</style>

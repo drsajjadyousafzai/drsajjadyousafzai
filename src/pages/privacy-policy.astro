@@ -1,0 +1,114 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  title="Privacy Policy | Dr. Sajjad Yousafzai"
+  description="Read the privacy policy for drsajjadyousafzai.com, including how patient information is handled and protected."
+  path="/privacy-policy"
+>
+  <section class="section legal-section">
+    <div class="container legal-shell">
+      <header class="section-head section-head--center reveal">
+        <p class="eyebrow">Legal information</p>
+        <h1>Privacy Policy</h1>
+        <p>Last updated: August 2026</p>
+      </header>
+
+      <div class="legal-card reveal" data-delay="80">
+        <p>
+          This privacy policy explains how this website, drsajjadyousafzai.com, handles personal information.
+          The clinic takes privacy seriously and is committed to using personal information only for patient care,
+          communication, and service improvement.
+        </p>
+
+        <h2>Information we may collect</h2>
+        <p>
+          We may collect information you provide directly, such as your name, phone number, appointment request,
+          service interests, and messages sent through the contact or WhatsApp forms. We may also collect limited
+          technical information such as browser type, page visits, and general analytics data to improve the website.
+        </p>
+
+        <h2>How information is used</h2>
+        <p>
+          Your information may be used to respond to enquiries, arrange appointments, confirm clinic schedules,
+          improve website functionality, and provide information about our services. We do not sell or rent personal
+          information to third parties for marketing purposes.
+        </p>
+
+        <h2>Communication and appointment requests</h2>
+        <p>
+          When you use the contact or WhatsApp booking form, the information is used to prepare for a consultation,
+          to respond to your request, or to direct you to the appropriate service. Please do not share sensitive,
+          confidential, or highly private medical details in a public message or non-secure channel unless the clinic
+          specifically asks for them.
+        </p>
+
+        <h2>Website analytics and cookies</h2>
+        <p>
+          The website may use standard analytics tools to understand how visitors use the site. This helps improve
+          navigation, performance, and content. Cookies may be used for website functionality and analytics. You can
+          usually manage cookie preferences in your browser settings.
+        </p>
+
+        <h2>Data retention</h2>
+        <p>
+          We retain personal information only as long as necessary for clinical communication, patient scheduling,
+          legal obligations, and service quality purposes. Information may be deleted or anonymised when no longer needed.
+        </p>
+
+        <h2>Third-party websites</h2>
+        <p>
+          Our website may contain links to third-party websites, maps, social media profiles, or other online services.
+          We are not responsible for the privacy practices or content of those external websites.
+        </p>
+
+        <h2>Your rights</h2>
+        <p>
+          You may ask to review, correct, or limit the use of your personal information whenever appropriate.
+          If you have a concern about how your information is handled, please contact the clinic directly.
+        </p>
+
+        <h2>Contact</h2>
+        <p>
+          For privacy questions, please use the contact information available on the clinic website or email the clinic
+          through the contact page.
+        </p>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .legal-section {
+    padding-top: clamp(4rem, 8vw, 6rem);
+  }
+
+  .legal-shell {
+    max-width: 860px;
+    margin-inline: auto;
+  }
+
+  .legal-card {
+    background: rgba(255, 255, 255, 0.7);
+    border: 1px solid var(--blue-line);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    padding: clamp(1.5rem, 3vw, 2.5rem);
+  }
+
+  .legal-card > * + * {
+    margin-top: 1rem;
+  }
+
+  .legal-card h2 {
+    font-size: clamp(1.4rem, 1.8vw, 2rem);
+    margin-top: 2rem;
+  }
+
+  .legal-card p,
+  .legal-card li {
+    color: var(--slate);
+    font-size: var(--step-0);
+  }
+</style>

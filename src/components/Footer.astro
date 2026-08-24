@@ -50,6 +50,8 @@ const year = new Date().getFullYear();
         <li><a href="/services">All Services</a></li>
         <li><a href="/cases">Patient Stories</a></li>
         <li><a href="/contact">Contact & Location</a></li>
+        <li><a href="/privacy-policy">Privacy Policy</a></li>
+        <li><a href="/terms-of-service">Terms of Service</a></li>
       </ul>
     </div>
 
@@ -68,6 +70,7 @@ const year = new Date().getFullYear();
   <div class="container footer-bottom">
     <p>© {year} Dr. Sajjad Yousafzai. For general information only. This website does not replace a proper medical examination.</p>
     <p>Consultant Vascular, General and Laparoscopic Surgeon, Lady Reading Hospital MTI, Peshawar.</p>
+    <p class="footer-credit">Designed and developed by <a href="https://wa.me/923161804125" target="_blank" rel="noopener noreferrer">Zaryab K.</a></p>
   </div>
 </footer>
 
@@ -158,6 +161,20 @@ const year = new Date().getFullYear();
 
   .footer-bottom { border-top: 1px solid rgba(255,255,255,0.1); padding-block: 1.5rem; display: flex; flex-wrap: wrap; gap: 0.5rem 2rem; justify-content: space-between; }
   .footer-bottom p { font-size: 0.82rem; color: #8EA6BE; }
+  .footer-credit { display: inline-flex; align-items: center; gap: 0.35rem; }
+  .footer-credit a {
+    color: #9feadf;
+    text-decoration: none;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    transition: color 0.2s ease, transform 0.2s ease;
+  }
+  .footer-credit a:hover,
+  .footer-credit a:focus-visible {
+    color: #d9fbf5;
+    text-decoration: underline;
+    transform: translateY(-1px);
+  }
 
   @media (max-width: 900px) { .footer-grid { grid-template-columns: 1fr 1fr; gap: 2rem; } }
   @media (max-width: 560px) {
