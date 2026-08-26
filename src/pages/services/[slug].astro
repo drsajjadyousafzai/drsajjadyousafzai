@@ -53,7 +53,7 @@ const seoTitle = entry.data.seoTitle.includes('Dr. Sajjad Yousafzai')
   : `${entry.data.seoTitle} | Dr. Sajjad Yousafzai`;
 
 const jsonLd = [
-  physicianSchema(site, { rating: 5, count: 460 }),
+  physicianSchema(site),
   procedureSchema({
     title: entry.data.title,
     medicalTerm: entry.data.medicalTerm,

@@ -28,7 +28,6 @@
   ],
   "stats": [
     { "value": "10+", "label": "years in surgery" },
-    { "value": "460+", "label": "verified patient reviews" },
     { "value": "5.0", "label": "average rating on Google" },
     { "value": "100%", "label": "reported patient satisfaction" }
   ]

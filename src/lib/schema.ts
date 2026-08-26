@@ -18,7 +18,7 @@ const specialties = [
 ];
 
 /** Physician + MedicalBusiness combined entity for the clinic. */
-export function physicianSchema(site: Site, aggregate?: { rating: number; count: number }) {
+export function physicianSchema(site: Site) {
   const node: Record<string, unknown> = {
     '@context': 'https://schema.org',
     '@type': ['Physician', 'MedicalBusiness'],
@@ -39,14 +39,6 @@ export function physicianSchema(site: Site, aggregate?: { rating: number; count:
     }],
     sameAs: site.socials.map((s) => s.url).filter((u) => !u.includes('CONFIRM')),
   };
-  if (aggregate) {
-    node.aggregateRating = {
-      '@type': 'AggregateRating',
-      ratingValue: aggregate.rating,
-      reviewCount: aggregate.count,
-      bestRating: 5, worstRating: 1,
-    };
-  }
   return node;
 }
 

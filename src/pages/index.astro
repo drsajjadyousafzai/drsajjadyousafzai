@@ -55,10 +55,10 @@ const visitSteps = [
 ];
 
 const seoTitle = 'Vascular Surgeon in Peshawar | Dr. Sajjad Yousafzai';
-const seoDesc = 'Dr. Sajjad Yousafzai, consultant vascular surgeon in Peshawar. Varicocele surgery, varicose veins, AV fistula and more. Rated 5/5 by 460+ verified Google reviews. Call today.';
+const seoDesc = 'Dr. Sajjad Yousafzai, consultant vascular surgeon in Peshawar. Varicocele surgery, varicose veins, AV fistula and more. Rated 5 out of 5 by verified patients on Google. Call today.';
 
 const jsonLd = [
-  physicianSchema(site, { rating: 5, count: 460 }),
+  physicianSchema(site),
   personSchema(site),
   faqSchema(homeFaqs),
 ];
@@ -100,7 +100,7 @@ const jsonLd = [
             <span class="hr-stars" aria-hidden="true">
               <Icon name="star" size={14} /><Icon name="star" size={14} /><Icon name="star" size={14} /><Icon name="star" size={14} /><Icon name="star" size={14} />
             </span>
-            <span class="hr-text"><strong class="tnum">5.0</strong> from 460+ Google reviews</span>
+            <span class="hr-text"><strong class="tnum">5.0</strong> rating on Google</span>
           </span>
         </div>
 
@@ -114,9 +114,8 @@ const jsonLd = [
     <div class="container">
       <ul class="trust-bar">
         <li class="reveal"><strong class="tnum" data-count="10" data-suffix="+">0+</strong><span>years in surgery</span></li>
-        <li class="reveal" data-delay="80"><strong class="tnum" data-count="460" data-suffix="+">0+</strong><span>verified patient reviews</span></li>
-        <li class="reveal" data-delay="160"><strong class="tnum" data-count="5" data-decimals="1"><span>out of 5</span></strong><span>average patient rating</span></li>
-        <li class="reveal" data-delay="240"><strong class="lrh">Lady Reading Hospital</strong><span>MTI, Peshawar</span></li>
+        <li class="reveal" data-delay="80"><strong class="tnum" data-count="5" data-decimals="1"><span>out of 5</span></strong><span>average patient rating</span></li>
+        <li class="reveal" data-delay="160"><strong class="lrh">Lady Reading Hospital</strong><span>MTI, Peshawar</span></li>
       </ul>
     </div>
   </section>
@@ -227,7 +226,7 @@ const jsonLd = [
     <div class="container">
       <div class="section-head section-head--center">
         <h2 class="reveal" data-delay="80">What Patients Say</h2>
-        <p class="reveal" data-delay="140">Rated 5 out of 5 by more than 460 verified patients on Google, with 100 percent reporting they were satisfied.</p>
+        <p class="reveal" data-delay="140">Rated 5 out of 5 by verified patients on Google, with 100 percent reporting they were satisfied.</p>
       </div>
       <div class="stories-grid">
         {testimonials.map((t, i) => (
